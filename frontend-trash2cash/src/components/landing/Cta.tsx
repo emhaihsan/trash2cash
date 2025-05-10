@@ -2,6 +2,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { FaFileAlt, FaArrowRight } from "react-icons/fa";
+import Link from "next/link";
 
 export default function Cta() {
   const [mounted, setMounted] = useState(false);
@@ -11,28 +12,13 @@ export default function Cta() {
   }, []);
 
   return (
-    <section className="py-20 w-full relative overflow-hidden">
+    <section id="cta" className="py-24 w-full relative overflow-hidden">
       {/* Background decoration */}
-      <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-cyan-600 opacity-90 -z-10" />
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 -z-10" />
 
-      {/* Decorative patterns */}
-      <div className="absolute inset-0 opacity-10 -z-10">
-        <div className="absolute top-0 left-0 w-full h-full">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full bg-white"
-              style={{
-                width: Math.random() * 20 + 5,
-                height: Math.random() * 20 + 5,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                opacity: Math.random() * 0.5 + 0.3,
-              }}
-            />
-          ))}
-        </div>
-      </div>
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl -z-10" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl -z-10" />
 
       <div className="container mx-auto px-6 relative z-10">
         <div
@@ -40,40 +26,54 @@ export default function Cta() {
             mounted ? "animate-fadeIn" : "opacity-0"
           }`}
         >
-          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
-            Ingin Mengetahui Lebih Dalam Tentang Trash2Cash?
+          <span className="inline-block px-4 py-1.5 bg-gradient-to-r from-emerald-500/30 to-cyan-500/30 rounded-full text-emerald-600 font-medium text-sm mb-4">
+            WHITEPAPER
+          </span>
+
+          <h2 className="text-4xl sm:text-5xl font-bold text-slate-700 mb-6">
+            Ingin Mengetahui Lebih Dalam Tentang{" "}
+            <span className="bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">
+              Trash2Cash
+            </span>
+            ?
           </h2>
 
-          <p className="text-xl text-white/90 mb-10 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-600 mb-10 max-w-3xl mx-auto">
             Pelajari teknologi, tokenomics, dan visi jangka panjang kami dalam
             whitepaper resmi Trash2Cash.
           </p>
 
-          <a
-            href="#"
-            className="inline-flex items-center gap-3 px-8 py-4 bg-white text-emerald-600 font-semibold rounded-full shadow-lg hover:shadow-white/20 hover:scale-105 transition-all duration-300"
+          <Link
+            href="/whitepaper"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-900 font-semibold rounded-full shadow-lg hover:shadow-emerald-500/30 hover:scale-105 transition-all duration-300"
           >
-            <FaFileAlt className="text-emerald-500" />
+            <FaFileAlt className="text-slate-900" />
             Baca Whitepaper
-            <FaArrowRight className="text-emerald-500" />
-          </a>
+            <FaArrowRight className="text-slate-900" />
+          </Link>
 
-          <div className="mt-8 text-white/80 flex flex-wrap justify-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-white"></div>
-              <span>Tokenomics</span>
+          <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-2xl mx-auto">
+            <div className="bg-slate-800/70 backdrop-blur-sm p-4 rounded-xl border border-slate-700/80 hover:border-emerald-500/30 transition-colors">
+              <div className="text-emerald-300 font-semibold mb-1">
+                Tokenomics
+              </div>
+              <div className="text-slate-300 text-sm">
+                Distribusi & ekonomi token
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-white"></div>
-              <span>Roadmap</span>
+            <div className="bg-slate-800/70 backdrop-blur-sm p-4 rounded-xl border border-slate-700/80 hover:border-cyan-500/30 transition-colors">
+              <div className="text-cyan-300 font-semibold mb-1">Roadmap</div>
+              <div className="text-slate-300 text-sm">Rencana pengembangan</div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-white"></div>
-              <span>Teknologi</span>
+            <div className="bg-slate-800/70 backdrop-blur-sm p-4 rounded-xl border border-slate-700/80 hover:border-sky-500/30 transition-colors">
+              <div className="text-sky-300 font-semibold mb-1">Teknologi</div>
+              <div className="text-slate-300 text-sm">AI & blockchain</div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-white"></div>
-              <span>Ekosistem</span>
+            <div className="bg-slate-800/70 backdrop-blur-sm p-4 rounded-xl border border-slate-700/80 hover:border-indigo-500/30 transition-colors">
+              <div className="text-indigo-300 font-semibold mb-1">
+                Ekosistem
+              </div>
+              <div className="text-slate-300 text-sm">Partner & integrasi</div>
             </div>
           </div>
         </div>
