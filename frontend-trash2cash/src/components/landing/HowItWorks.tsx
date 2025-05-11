@@ -28,51 +28,51 @@ export default function HowItWorks() {
   const steps = [
     {
       icon: <FaWallet size={32} className="text-emerald-500" />,
-      title: "Hubungkan Wallet",
+      title: "Connect Wallet",
       description:
-        "Connect wallet Web3 Anda (MetaMask, Rainbow, dll) ke platform Trash2Cash.",
+        "Connect your Web3 wallet (MetaMask, Rainbow, etc) to the Trash2Cash platform.",
       stepNumber: 1,
       color: "from-emerald-500 to-emerald-600",
       bgLight: "bg-emerald-50",
       bgDark: "dark:bg-emerald-900/20",
       image:
-        "https://images.unsplash.com/photo-1660139099083-03e0777ac6a7?auto=format&fit=crop&w=600&q=80", // Ganti dengan gambar dompet
+        "https://images.unsplash.com/photo-1660139099083-03e0777ac6a7?auto=format&fit=crop&w=600&q=80",
     },
     {
       icon: <FaKeyboard size={32} className="text-sky-500" />,
-      title: "Deskripsi Sampah",
+      title: "Describe Waste",
       description:
-        "Masukkan deskripsi detail tentang sampah yang ingin Anda klasifikasikan.",
+        "Enter a detailed description of the waste you want to classify.",
       stepNumber: 2,
       color: "from-sky-500 to-sky-600",
       bgLight: "bg-sky-50",
       bgDark: "dark:bg-sky-900/20",
       image:
-        "https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&w=600&q=80", // Typing/description image
+        "https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&w=600&q=80",
     },
     {
       icon: <FaRobot size={32} className="text-indigo-500" />,
-      title: "Klasifikasi AI",
+      title: "AI Classification",
       description:
-        "AI kami akan menganalisis dan mengklasifikasikan sampah berdasarkan deskripsi Anda.",
+        "Our AI will analyze and classify the waste based on your description.",
       stepNumber: 3,
       color: "from-indigo-500 to-indigo-600",
       bgLight: "bg-indigo-50",
       bgDark: "dark:bg-indigo-900/20",
       image:
-        "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=600&q=80", // AI/tech image
+        "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=600&q=80",
     },
     {
       icon: <FaCoins size={32} className="text-amber-500" />,
-      title: "Dapatkan Token",
+      title: "Earn Tokens",
       description:
-        "Klaim token reward ERC-20 yang langsung masuk ke wallet Anda.",
+        "Claim ERC-20 reward tokens that are sent directly to your wallet.",
       stepNumber: 4,
       color: "from-amber-500 to-amber-600",
       bgLight: "bg-amber-50",
       bgDark: "dark:bg-amber-900/20",
       image:
-        "https://images.unsplash.com/photo-1621761191319-c6fb62004040?auto=format&fit=crop&w=600&q=80", // Coins/reward image
+        "https://images.unsplash.com/photo-1621761191319-c6fb62004040?auto=format&fit=crop&w=600&q=80",
     },
   ];
 
@@ -93,18 +93,18 @@ export default function HowItWorks() {
           }`}
         >
           <span className="inline-block px-4 py-1.5 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 rounded-full text-emerald-600 dark:text-emerald-400 font-medium text-sm mb-4">
-            CARA KERJA
+            HOW IT WORKS
           </span>
           <h2 className="text-4xl sm:text-5xl font-bold text-slate-800 dark:text-slate-100 mb-6">
-            Bagaimana{" "}
+            How does{" "}
             <span className="bg-gradient-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent">
               Trash2Cash
             </span>{" "}
-            Bekerja?
+            work?
           </h2>
           <p className="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto text-lg">
-            Proses sederhana dari deskripsi sampah menjadi token digital dalam 4
-            langkah mudah
+            A simple process from waste description to digital tokens in 4 easy
+            steps
           </p>
         </div>
 

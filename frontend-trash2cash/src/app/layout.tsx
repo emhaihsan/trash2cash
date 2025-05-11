@@ -13,26 +13,26 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Trash2Cash — Trash2Earn Revolution",
+  title: "Trash2Cash — The Trash2Earn Revolution",
   description:
-    "Trash2Cash adalah platform Trash2Earn berbasis AI dan blockchain yang mengubah pengelolaan sampah menjadi aset digital dan insentif nyata.",
+    "Trash2Cash is an AI and blockchain-based Trash2Earn platform that transforms waste management into digital assets and real-world incentives.",
   keywords: [
     "Trash2Cash",
     "Trash2Earn",
     "blockchain",
     "AI",
     "web3",
-    "sampah",
-    "ekonomi sirkular",
+    "waste",
+    "circular economy",
     "tokenomics",
-    "daur ulang",
-    "inovasi lingkungan",
+    "recycling",
+    "environmental innovation",
   ],
   themeColor: "#10b981",
   openGraph: {
-    title: "Trash2Cash — Trash2Earn Revolution",
+    title: "Trash2Cash — The Trash2Earn Revolution",
     description:
-      "Gabung revolusi Trash2Earn! Ubah sampah jadi aset digital dengan AI dan blockchain di Trash2Cash.",
+      "Join the Trash2Earn revolution! Turn waste into digital assets with AI and blockchain on Trash2Cash.",
     url: "https://trash2cash.io",
     siteName: "Trash2Cash",
     images: [
@@ -43,14 +43,14 @@ export const metadata: Metadata = {
         alt: "Trash2Cash Landing Page",
       },
     ],
-    locale: "id_ID",
+    locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Trash2Cash — Trash2Earn Revolution",
+    title: "Trash2Cash — The Trash2Earn Revolution",
     description:
-      "Gabung revolusi Trash2Earn! Ubah sampah jadi aset digital dengan AI dan blockchain di Trash2Cash.",
+      "Join the Trash2Earn revolution! Turn waste into digital assets with AI and blockchain on Trash2Cash.",
     images: ["/og-image.png"],
     creator: "@trash2cashid",
   },

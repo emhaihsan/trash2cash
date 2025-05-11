@@ -49,7 +49,7 @@ export default function Hero() {
           }`}
           style={{ animationDelay: "200ms" }}
         >
-          <span className="block text-white mb-2">Revolusi</span>
+          <span className="block text-white mb-2">Revolutionize</span>
           <span className="bg-gradient-to-r from-emerald-400 via-sky-400 to-cyan-300 bg-clip-text text-transparent drop-shadow-lg">
             Trash2Earn
           </span>
@@ -61,11 +61,11 @@ export default function Hero() {
           }`}
           style={{ animationDelay: "400ms" }}
         >
-          Ubah deskripsi sampah menjadi aset digital melalui
-          <span className="text-emerald-400 font-semibold"> AI </span>&
-          <span className="text-sky-400 font-semibold"> blockchain</span>.
-          Jadilah bagian dari perubahan nyata untuk lingkungan dan dapatkan
-          reward setiap kontribusi!
+          Turn your trash description into digital assets with
+          <span className="text-emerald-400 font-semibold"> AI </span> &
+          <span className="text-sky-400 font-semibold"> blockchain</span>. Be
+          part of the real change for the environment and earn rewards for every
+          contribution!
         </p>
 
         <div
@@ -78,7 +78,7 @@ export default function Hero() {
             Connect Wallet
           </button>
           <button className="px-8 py-4 rounded-full bg-white/10 backdrop-blur-sm text-white border border-white/20 font-semibold text-lg shadow-lg hover:bg-white/20 hover:scale-105 transition-all duration-300">
-            Pelajari Lebih Lanjut
+            Learn More
           </button>
         </div>
 
@@ -93,27 +93,25 @@ export default function Hero() {
             <span className="text-3xl sm:text-4xl font-bold text-white">
               10K+
             </span>
-            <span className="text-slate-300 text-sm">
-              Sampah Terklasifikasi
-            </span>
+            <span className="text-slate-300 text-sm">Classified Trash</span>
           </div>
           <div className="flex flex-col items-center">
             <span className="text-3xl sm:text-4xl font-bold text-white">
               5K+
             </span>
-            <span className="text-slate-300 text-sm">Pengguna Aktif</span>
+            <span className="text-slate-300 text-sm">Active Users</span>
           </div>
           <div className="flex flex-col items-center">
             <span className="text-3xl sm:text-4xl font-bold text-white">
               50K
             </span>
-            <span className="text-slate-300 text-sm">Token Dibagikan</span>
+            <span className="text-slate-300 text-sm">Tokens Distributed</span>
           </div>
           <div className="flex flex-col items-center">
             <span className="text-3xl sm:text-4xl font-bold text-white">
               100+
             </span>
-            <span className="text-slate-300 text-sm">Kota Terjangkau</span>
+            <span className="text-slate-300 text-sm">Cities Reached</span>
           </div>
         </div>
 

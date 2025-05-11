@@ -65,35 +65,35 @@ export default function Faq() {
 
   const faqItems = [
     {
-      question: "Apa itu Trash2Cash?",
+      question: "What is Trash2Cash?",
       answer:
-        "Trash2Cash adalah platform inovatif yang menggabungkan AI dan blockchain untuk mengubah deskripsi sampah menjadi aset digital. Pengguna dapat mendeskripsikan sampah mereka, yang kemudian diklasifikasikan oleh AI kami, dan mendapatkan token ERC-20 sebagai reward atas kontribusi mereka.",
+        "Trash2Cash is an innovative platform that combines AI and blockchain to turn trash descriptions into digital assets. Users can describe their trash, which is then classified by our AI, and receive ERC-20 tokens as rewards for their contributions.",
     },
     {
-      question: "Bagaimana cara kerja klasifikasi AI?",
+      question: "How does the AI classification work?",
       answer:
-        "AI kami menggunakan model bahasa canggih yang dilatih khusus untuk mengidentifikasi dan mengklasifikasikan berbagai jenis sampah berdasarkan deskripsi tekstual. Model ini dapat mengenali berbagai kategori sampah seperti plastik, kertas, logam, elektronik, dan lainnya dengan tingkat akurasi tinggi.",
+        "Our AI uses advanced language models specifically trained to identify and classify various types of trash based on textual descriptions. The model can recognize categories such as plastic, paper, metal, electronics, and more with high accuracy.",
     },
     {
-      question: "Apa yang bisa saya lakukan dengan token reward?",
+      question: "What can I do with the reward tokens?",
       answer:
-        "Token reward ERC-20 yang Anda dapatkan dapat digunakan dalam berbagai cara: menukarkannya dengan mata uang kripto lain, menyimpannya sebagai investasi, atau menggunakannya dalam ekosistem Trash2Cash untuk layanan dan fitur premium di masa depan.",
+        "The ERC-20 reward tokens you receive can be used in various ways: exchange them for other cryptocurrencies, hold them as an investment, or use them within the Trash2Cash ecosystem for premium services and features in the future.",
     },
     {
-      question: "Wallet apa yang didukung oleh Trash2Cash?",
+      question: "Which wallets are supported by Trash2Cash?",
       answer:
-        "Trash2Cash mendukung berbagai wallet Web3 populer seperti MetaMask, Rainbow, WalletConnect, Coinbase Wallet, dan Trust Wallet. Anda hanya perlu menghubungkan wallet Anda ke platform kami untuk mulai menerima token reward.",
+        "Trash2Cash supports popular Web3 wallets such as MetaMask, Rainbow, WalletConnect, Coinbase Wallet, and Trust Wallet. You only need to connect your wallet to our platform to start receiving reward tokens.",
     },
     {
-      question: "Apakah saya perlu membayar untuk menggunakan Trash2Cash?",
+      question: "Do I need to pay to use Trash2Cash?",
       answer:
-        "Tidak, Trash2Cash sepenuhnya gratis untuk digunakan. Namun, transaksi blockchain mungkin dikenakan biaya gas yang kecil, yang merupakan standar untuk semua transaksi di jaringan blockchain.",
+        "No, Trash2Cash is completely free to use. However, blockchain transactions may incur a small gas fee, which is standard for all transactions on blockchain networks.",
     },
     {
       question:
-        "Bagaimana Trash2Cash berkontribusi pada keberlanjutan lingkungan?",
+        "How does Trash2Cash contribute to environmental sustainability?",
       answer:
-        "Dengan memberikan insentif untuk klasifikasi sampah, Trash2Cash mendorong kesadaran dan edukasi tentang pengelolaan sampah yang tepat. Platform ini juga mengumpulkan data berharga tentang jenis sampah yang umum, yang dapat digunakan untuk inisiatif daur ulang dan keberlanjutan yang lebih luas.",
+        "By providing incentives for trash classification, Trash2Cash raises awareness and educates about proper waste management. The platform also gathers valuable data on common types of trash, which can be used for wider recycling and sustainability initiatives.",
     },
   ];
 
@@ -118,11 +118,10 @@ export default function Faq() {
             FAQ
           </span>
           <h2 className="text-4xl sm:text-5xl font-bold text-slate-800 dark:text-slate-100 mb-6">
-            Pertanyaan yang Sering Diajukan
+            Frequently Asked Questions
           </h2>
           <p className="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto text-lg">
-            Temukan jawaban untuk pertanyaan umum tentang Trash2Cash dan cara
-            kerjanya
+            Find answers to common questions about Trash2Cash and how it works
           </p>
         </div>
 
@@ -139,13 +138,13 @@ export default function Faq() {
             </div>
             <div className="mt-8 text-center">
               <h3 className="text-xl font-semibold text-slate-800 dark:text-slate-100 mb-2">
-                Masih ada pertanyaan?
+                Still have questions?
               </h3>
               <p className="text-slate-600 dark:text-slate-300 mb-4">
-                Hubungi tim kami untuk informasi lebih lanjut
+                Contact our team for more information
               </p>
               <button className="px-6 py-2 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-medium rounded-full shadow-lg hover:shadow-emerald-500/20 hover:scale-105 transition-all duration-300">
-                Kontak Kami
+                Contact Us
               </button>
             </div>
           </div>
@@ -168,13 +167,13 @@ export default function Faq() {
             {/* Mobile CTA */}
             <div className="mt-12 text-center lg:hidden">
               <h3 className="text-xl font-semibold text-slate-800 dark:text-slate-100 mb-2">
-                Masih ada pertanyaan?
+                Still have questions?
               </h3>
               <p className="text-slate-600 dark:text-slate-300 mb-4">
-                Hubungi tim kami untuk informasi lebih lanjut
+                Contact our team for more information
               </p>
               <button className="px-6 py-2 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-medium rounded-full shadow-lg hover:shadow-emerald-500/20 hover:scale-105 transition-all duration-300">
-                Kontak Kami
+                Contact Us
               </button>
             </div>
           </div>

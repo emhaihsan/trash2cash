@@ -77,28 +77,28 @@ export default function Stats() {
     {
       icon: <FaRecycle className="text-3xl text-white" />,
       value: isVisible ? "50K+" : "0",
-      label: "Sampah Terklasifikasi",
+      label: "Classified Wastes",
       color: "bg-emerald-500",
       delay: 0,
     },
     {
       icon: <FaCoins className="text-3xl text-white" />,
       value: isVisible ? "100K+" : "0",
-      label: "Token Dibagikan",
+      label: "Tokens Distributed",
       color: "bg-amber-500",
       delay: 200,
     },
     {
       icon: <FaUsers className="text-3xl text-white" />,
       value: isVisible ? "10K+" : "0",
-      label: "Pengguna Aktif",
+      label: "Active Users",
       color: "bg-sky-500",
       delay: 400,
     },
     {
       icon: <FaGlobeAsia className="text-3xl text-white" />,
       value: isVisible ? "25+" : "0",
-      label: "Kota Terjangkau",
+      label: "Cities Reached",
       color: "bg-indigo-500",
       delay: 600,
     },
@@ -123,14 +123,13 @@ export default function Stats() {
             IMPACT
           </span>
           <h2 className="text-4xl sm:text-5xl font-bold text-slate-800 dark:text-slate-100 mb-6">
-            Dampak{" "}
+            The Impact of{" "}
             <span className="bg-gradient-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent">
               Trash2Cash
             </span>
           </h2>
           <p className="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto text-lg">
-            Bersama-sama, kita telah menciptakan perubahan nyata untuk
-            lingkungan
+            Together, we've created real change for the environment
           </p>
         </div>
 
@@ -148,10 +147,10 @@ export default function Stats() {
           style={{ animationDelay: "800ms" }}
         >
           <button className="px-8 py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-semibold rounded-full shadow-lg hover:shadow-emerald-500/20 hover:scale-105 transition-all duration-300">
-            Bergabung Sekarang
+            Join Now
           </button>
           <p className="mt-4 text-slate-600 dark:text-slate-300">
-            Dan jadilah bagian dari revolusi Trash2Earn
+            And become part of the Trash2Earn revolution
           </p>
         </div>
       </div>

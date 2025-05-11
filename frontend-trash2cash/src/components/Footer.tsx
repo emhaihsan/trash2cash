@@ -22,32 +22,36 @@ export default function Footer() {
               <span className="text-xl font-bold">Trash2Cash</span>
             </div>
             <p className="text-slate-400 max-w-md">
-              Platform revolusioner yang menggabungkan AI dan blockchain untuk
-              mengubah deskripsi sampah menjadi aset digital, mendorong
-              keberlanjutan lingkungan melalui insentif.
+              A revolutionary platform combining AI and blockchain to turn trash
+              descriptions into digital assets, driving environmental
+              sustainability through incentives.
             </p>
             <div className="flex gap-4 mt-6">
               <a
                 href="#"
                 className="text-slate-400 hover:text-emerald-400 transition-colors"
+                aria-label="Twitter"
               >
                 <FaTwitter size={20} />
               </a>
               <a
                 href="#"
                 className="text-slate-400 hover:text-emerald-400 transition-colors"
+                aria-label="GitHub"
               >
                 <FaGithub size={20} />
               </a>
               <a
                 href="#"
                 className="text-slate-400 hover:text-emerald-400 transition-colors"
+                aria-label="Discord"
               >
                 <FaDiscord size={20} />
               </a>
               <a
                 href="#"
                 className="text-slate-400 hover:text-emerald-400 transition-colors"
+                aria-label="Telegram"
               >
                 <FaTelegram size={20} />
               </a>

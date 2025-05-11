@@ -65,7 +65,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 
         {/* Learn more link */}
         <div className="mt-auto flex items-center gap-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <span>Pelajari lebih lanjut</span>
+          <span>Learn more</span>
           <FaArrowRight
             size={12}
             className={`transform transition-transform duration-300 ${
@@ -88,25 +88,25 @@ export default function Features() {
   const features = [
     {
       icon: <FaRobot size={36} className="text-emerald-500" />,
-      title: "Klasifikasi AI Cerdas",
+      title: "Smart AI Classification",
       description:
-        "Input deskripsi sampah Anda, dan biarkan AI canggih kami mengklasifikasikannya secara otomatis dengan akurasi tinggi.",
+        "Input your waste description and let our advanced AI classify it automatically with high accuracy.",
       colorClass: "bg-emerald-100 dark:bg-emerald-900/50",
       bgGradient: "bg-gradient-to-br from-emerald-400 to-emerald-600",
     },
     {
       icon: <FaCoins size={36} className="text-sky-500" />,
-      title: "Dapatkan Token Reward",
+      title: "Earn Token Rewards",
       description:
-        "Setiap klasifikasi yang berhasil akan memberikan Anda token ERC-20 sebagai insentif yang dapat digunakan atau ditukarkan.",
+        "Every successful classification grants you ERC-20 tokens as incentives that you can use or exchange.",
       colorClass: "bg-sky-100 dark:bg-sky-900/50",
       bgGradient: "bg-gradient-to-br from-sky-400 to-indigo-600",
     },
     {
       icon: <FaWallet size={36} className="text-cyan-500" />,
-      title: "Integrasi Wallet Mudah",
+      title: "Easy Wallet Integration",
       description:
-        "Hubungkan dompet Web3 Anda dengan mudah (MetaMask, Rainbow, dll.) untuk menerima dan mengelola token reward Anda.",
+        "Easily connect your Web3 wallet (MetaMask, Rainbow, etc.) to receive and manage your token rewards.",
       colorClass: "bg-cyan-100 dark:bg-cyan-900/50",
       bgGradient: "bg-gradient-to-br from-cyan-400 to-blue-600",
     },
@@ -129,18 +129,18 @@ export default function Features() {
           }`}
         >
           <span className="inline-block px-4 py-1.5 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 rounded-full text-emerald-600 dark:text-emerald-400 font-medium text-sm mb-4">
-            FITUR UNGGULAN
+            FEATURE HIGHLIGHTS
           </span>
           <h2 className="text-4xl sm:text-5xl font-bold text-slate-800 dark:text-slate-100 mb-6">
-            Kenapa{" "}
+            Why is{" "}
             <span className="bg-gradient-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent">
               Trash2Cash
             </span>{" "}
-            Begitu Revolusioner?
+            so Revolutionary?
           </h2>
           <p className="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto text-lg">
-            Kami menggabungkan teknologi terkini untuk memberikan solusi
-            inovatif dalam pengelolaan sampah dan memberikan insentif nyata.
+            We combine the latest technology to deliver innovative waste
+            management solutions and real incentives.
           </p>
         </div>
 

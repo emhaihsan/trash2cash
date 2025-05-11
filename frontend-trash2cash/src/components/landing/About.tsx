@@ -19,21 +19,21 @@ export default function About() {
   const missionPoints = [
     {
       icon: <FaRecycle className="text-emerald-500" size={24} />,
-      title: "Teknologi untuk Lingkungan",
+      title: "Technology for the Environment",
       description:
-        "Menggabungkan AI dan blockchain untuk menciptakan solusi inovatif dalam pengelolaan sampah.",
+        "Combining AI and blockchain to create innovative solutions in waste management.",
     },
     {
       icon: <FaHandHoldingHeart className="text-sky-500" size={24} />,
-      title: "Insentif Berkelanjutan",
+      title: "Sustainable Incentives",
       description:
-        "Memberikan reward nyata untuk mendorong partisipasi aktif dalam pengelolaan sampah.",
+        "Providing real rewards to encourage active participation in waste management.",
     },
     {
       icon: <FaGlobeAsia className="text-cyan-500" size={24} />,
-      title: "Dampak Global",
+      title: "Global Impact",
       description:
-        "Menciptakan ekosistem yang dapat diakses secara global untuk memaksimalkan dampak positif.",
+        "Building an ecosystem accessible globally to maximize positive impact.",
     },
   ];
 
@@ -53,17 +53,17 @@ export default function About() {
           }`}
         >
           <span className="inline-block px-4 py-1.5 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 rounded-full text-emerald-600 dark:text-emerald-400 font-medium text-sm mb-4">
-            TENTANG KAMI
+            ABOUT US
           </span>
           <h2 className="text-4xl sm:text-5xl font-bold text-slate-800 dark:text-slate-100 mb-6">
-            Visi & Misi{" "}
+            Vision & Mission{" "}
             <span className="bg-gradient-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent">
               Trash2Cash
             </span>
           </h2>
           <p className="text-slate-600 dark:text-slate-300 max-w-3xl mx-auto text-lg">
-            Kami hadir untuk mengubah paradigma pengelolaan sampah dengan
-            memanfaatkan teknologi terkini.
+            We are here to change the paradigm of waste management by leveraging
+            the latest technology.
           </p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -74,24 +74,24 @@ export default function About() {
           >
             <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-slate-200/50 dark:border-slate-700/50">
               <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">
-                Cerita Kami
+                Our Story
               </h3>
               <p className="text-slate-600 dark:text-slate-300 mb-4">
-                Trash2Cash lahir dari keprihatinan kami terhadap masalah sampah
-                yang semakin menumpuk dan kurangnya insentif untuk pengelolaan
-                sampah yang baik. Kami percaya bahwa dengan menggabungkan
-                kekuatan AI dan blockchain, kami dapat menciptakan solusi yang
-                tidak hanya efektif tetapi juga menguntungkan bagi semua pihak.
+                Trash2Cash was born out of our concern for the mounting waste
+                problem and the lack of incentives for proper waste management.
+                We believe that by combining the power of AI and blockchain, we
+                can create solutions that are not only effective but also
+                rewarding for everyone involved.
               </p>
               <p className="text-slate-600 dark:text-slate-300 mb-4">
-                Dengan pendekatan Trash2Earn, kami mengubah sampah dari beban
-                menjadi aset digital yang bernilai. Setiap kontribusi, sekecil
-                apapun, akan dihargai dan direkam dalam blockchain sebagai bukti
-                partisipasi dalam menjaga lingkungan.
+                With the Trash2Earn approach, we turn waste from a burden into
+                valuable digital assets. Every contribution, no matter how
+                small, will be rewarded and recorded on the blockchain as proof
+                of participation in protecting the environment.
               </p>
               <div className="mt-6 flex items-center gap-2">
                 <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                  Bergabunglah dengan revolusi Trash2Earn
+                  Join the Trash2Earn revolution
                 </span>
                 <FaLeaf className="text-emerald-500" />
               </div>
@@ -104,7 +104,7 @@ export default function About() {
             style={{ animationDelay: "400ms" }}
           >
             <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">
-              Misi Kami
+              Our Mission
             </h3>
 
             {missionPoints.map((point, index) => (
@@ -130,7 +130,7 @@ export default function About() {
         {/* Uncomment if you want to add team section
         <div className="mt-24">
           <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-8 text-center">
-            Tim Kami
+            Our Team
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {[1, 2, 3, 4].map((_, index) => (
@@ -151,10 +151,10 @@ export default function About() {
                   />
                 </div>
                 <h4 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-                  Nama Anggota
+                  Member Name
                 </h4>
                 <p className="text-emerald-600 dark:text-emerald-400 text-sm">
-                  Posisi / Jabatan
+                  Position / Role
                 </p>
               </div>
             ))}

@@ -29,33 +29,33 @@ export default function Testimonials() {
   const testimonials: TestimonialProps[] = [
     {
       quote:
-        "Trash2Cash mengubah cara saya memandang sampah. Sekarang, setiap kali saya membuang sesuatu, saya berpikir tentang klasifikasinya dan nilai potensialnya. Platform ini benar-benar revolusioner!",
+        "Trash2Cash changed the way I see waste. Now, every time I throw something away, I think about its classification and potential value. This platform is truly revolutionary!",
       name: "Anita Wijaya",
-      title: "Aktivis Lingkungan",
+      title: "Environmental Activist",
       image:
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80",
     },
     {
       quote:
-        "Sebagai peneliti di bidang keberlanjutan, saya sangat terkesan dengan pendekatan inovatif Trash2Cash. Menggabungkan AI dan blockchain untuk mengatasi masalah sampah adalah terobosan yang kita butuhkan saat ini.",
+        "As a sustainability researcher, I'm very impressed by Trash2Cash's innovative approach. Combining AI and blockchain to tackle waste issues is the breakthrough we need right now.",
       name: "Dr. Budi Santoso",
-      title: "Peneliti Keberlanjutan",
+      title: "Sustainability Researcher",
       image:
         "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=150&h=150&q=80",
     },
     {
       quote:
-        "Token reward dari Trash2Cash memberikan insentif nyata bagi komunitas kami untuk lebih peduli terhadap pengelolaan sampah. Kami telah melihat peningkatan signifikan dalam kesadaran dan partisipasi.",
+        "The token rewards from Trash2Cash provide real incentives for our community to care more about waste management. We've seen a significant increase in awareness and participation.",
       name: "Citra Lestari",
-      title: "Koordinator Komunitas",
+      title: "Community Coordinator",
       image:
         "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&h=150&q=80",
     },
     {
       quote:
-        "Platform ini tidak hanya memberikan reward, tetapi juga mendidik pengguna tentang jenis-jenis sampah dan cara pengelolaannya. Trash2Cash adalah contoh sempurna bagaimana teknologi dapat mendorong perubahan positif.",
+        "This platform not only provides rewards but also educates users about types of waste and how to manage them. Trash2Cash is a perfect example of how technology can drive positive change.",
       name: "Deni Pratama",
-      title: "Pengembang Teknologi Hijau",
+      title: "Green Technology Developer",
       image:
         "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&h=150&q=80",
     },
@@ -90,11 +90,11 @@ export default function Testimonials() {
             TESTIMONIAL
           </span>
           <h2 className="text-4xl sm:text-5xl font-bold text-slate-800 dark:text-slate-100 mb-6">
-            Apa Kata Mereka?
+            What Do They Say?
           </h2>
           <p className="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto text-lg">
-            Dengarkan pengalaman dari pengguna dan ahli yang telah merasakan
-            manfaat Trash2Cash
+            Hear from users and experts who have experienced the benefits of
+            Trash2Cash
           </p>
         </div>
 
