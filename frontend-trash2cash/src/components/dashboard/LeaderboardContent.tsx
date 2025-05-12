@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
+import { LeaderboardUser } from "../dummies";
 
 // Lazy load Icons component
 const Icons = dynamic(() => import("@/components/ui/Icons"), {
@@ -12,15 +13,6 @@ const Icons = dynamic(() => import("@/components/ui/Icons"), {
 });
 
 // Interface untuk data user di leaderboard
-interface LeaderboardUser {
-  id: string;
-  name: string;
-  image: string | null;
-  totalItems: number;
-  totalTokens: number;
-  totalSubmissions: number;
-  rank: number;
-}
 
 export default function LeaderboardContent() {
   const { data: session } = useSession();

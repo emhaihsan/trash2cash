@@ -16,6 +16,7 @@ import {
   FaRecycle,
   FaMedal,
   FaUserCircle,
+  FaWallet,
 } from "react-icons/fa";
 
 // Map nama ikon ke komponen yang sesuai
@@ -34,6 +35,7 @@ const iconComponents = {
   FaRecycle,
   FaMedal,
   FaUserCircle,
+  FaWallet,
 };
 
 interface IconsProps {

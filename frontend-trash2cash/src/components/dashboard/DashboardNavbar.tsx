@@ -2,10 +2,16 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
-import { FaRecycle, FaUserCircle } from "react-icons/fa";
 import Link from "next/link";
 import { ProfileSkeleton } from "../ui/SkeletonLoader";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import CustomWalletButton from "../ui/CustomWalletButton";
+import dynamic from "next/dynamic";
+
+// Lazy load Icons component
+const Icons = dynamic(() => import("@/components/ui/Icons"), {
+  ssr: false,
+  loading: () => <span className="w-4 h-4"></span>,
+});
 
 export default function DashboardNavbar() {
   const { data: session, status } = useSession();
@@ -15,7 +21,7 @@ export default function DashboardNavbar() {
     <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-slate-800 shadow-sm z-20 px-6 py-3 flex items-center justify-between">
       <div className="flex items-center gap-2">
         <Link href="/" className="flex items-center gap-2">
-          <FaRecycle className="text-2xl text-emerald-500" />
+          <Icons name="FaRecycle" className="text-2xl text-emerald-500" />
           <span className="font-bold text-xl bg-gradient-to-r from-emerald-600 via-sky-600 to-cyan-400 bg-clip-text text-transparent">
             Trash2Cash
           </span>
@@ -23,9 +29,9 @@ export default function DashboardNavbar() {
       </div>
 
       <div className="flex items-center gap-4">
-        {/* RainbowKit Connect Button */}
+        {/* Kustom Connect Button dengan Tema Trash2Cash */}
         <div className="hidden sm:block">
-          <ConnectButton showBalance={false} />
+          <CustomWalletButton />
         </div>
 
         <div className="relative">
@@ -43,7 +49,7 @@ export default function DashboardNavbar() {
                   className="w-8 h-8 rounded-full"
                 />
               ) : (
-                <FaUserCircle className="w-8 h-8 text-slate-400" />
+                <Icons name="FaUserCircle" className="w-8 h-8 text-slate-400" />
               )}
             </button>
           )}

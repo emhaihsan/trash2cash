@@ -14,18 +14,8 @@ import {
   FaCheck,
   FaTimes,
 } from "react-icons/fa";
-import Image from "next/image";
 
-interface NFTAchievement {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  requiredTokens: number;
-  requiredItems?: number;
-  isUnlocked: boolean;
-  isMinted: boolean;
-}
+import { NFTAchievement } from "../dummies";
 
 export default function ExchangeContent() {
   const { data: session, status } = useSession();

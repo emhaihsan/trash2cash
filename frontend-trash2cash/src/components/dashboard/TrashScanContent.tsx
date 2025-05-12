@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useRef, lazy, Suspense } from "react";
+import { useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { DetectedTrashItem } from "@/services/openrouter";
+
+import { DetectedItem } from "@/components/dummies";
 
 // Lazy import react-icons untuk mengurangi initial load
 import dynamic from "next/dynamic";
@@ -18,13 +19,6 @@ const Icons = dynamic(() => import("@/components/ui/Icons"), {
   ssr: false,
   loading: () => <span className="w-4 h-4"></span>,
 });
-
-interface DetectedItem {
-  name: string;
-  confidence: number;
-  category: "plastic" | "paper" | "metal" | "glass" | "organic" | "other";
-  tokenValue: number;
-}
 
 export default function TrashScanContent() {
   const { data: session, status } = useSession();
