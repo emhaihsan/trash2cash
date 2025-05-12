@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import {
-  FaTrophy,
-  FaMedal,
-  FaRecycle,
-  FaCoins,
-  FaUserCircle,
-} from "react-icons/fa";
 import Image from "next/image";
+import dynamic from "next/dynamic";
+
+// Lazy load Icons component
+const Icons = dynamic(() => import("@/components/ui/Icons"), {
+  ssr: false,
+  loading: () => <span className="w-4 h-4"></span>,
+});
 
 // Interface untuk data user di leaderboard
 interface LeaderboardUser {
@@ -153,13 +153,13 @@ export default function LeaderboardContent() {
   const getRankColor = (rank: number) => {
     switch (rank) {
       case 1:
-        return "text-yellow-500"; // Gold
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
       case 2:
-        return "text-slate-400"; // Silver
+        return "bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300";
       case 3:
-        return "text-amber-600"; // Bronze
+        return "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300";
       default:
-        return "text-slate-600 dark:text-slate-400";
+        return "bg-slate-50 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
     }
   };
 
@@ -167,11 +167,11 @@ export default function LeaderboardContent() {
   const getRankIcon = (rank: number) => {
     switch (rank) {
       case 1:
-        return <FaTrophy className="text-yellow-500" />;
+        return <Icons name="FaTrophy" className="text-yellow-500" />;
       case 2:
-        return <FaTrophy className="text-slate-400" />;
+        return <Icons name="FaTrophy" className="text-slate-400" />;
       case 3:
-        return <FaTrophy className="text-amber-600" />;
+        return <Icons name="FaTrophy" className="text-amber-600" />;
       default:
         return <span className="text-sm font-medium">{rank}</span>;
     }
@@ -203,7 +203,7 @@ export default function LeaderboardContent() {
               : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
           }`}
         >
-          This Week
+          Weekly
         </button>
         <button
           onClick={() => setTimeframe("monthly")}
@@ -213,7 +213,7 @@ export default function LeaderboardContent() {
               : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
           }`}
         >
-          This Month
+          Monthly
         </button>
         <button
           onClick={() => setTimeframe("alltime")}
@@ -227,56 +227,39 @@ export default function LeaderboardContent() {
         </button>
       </div>
 
-      {/* Leaderboard Table */}
+      {/* Leaderboard Content */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
-        {/* Table Header */}
-        <div className="grid grid-cols-12 gap-2 p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80">
-          <div className="col-span-1 font-medium text-slate-500 dark:text-slate-400 text-sm">
-            Rank
-          </div>
-          <div className="col-span-5 font-medium text-slate-500 dark:text-slate-400 text-sm">
-            User
-          </div>
-          <div className="col-span-2 font-medium text-slate-500 dark:text-slate-400 text-sm text-center">
-            Items
-          </div>
-          <div className="col-span-2 font-medium text-slate-500 dark:text-slate-400 text-sm text-center">
-            Tokens
-          </div>
-          <div className="col-span-2 font-medium text-slate-500 dark:text-slate-400 text-sm text-center">
-            Submissions
-          </div>
+        {/* Header */}
+        <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-200 dark:border-slate-700 text-sm text-slate-500 dark:text-slate-400">
+          <div className="col-span-1 text-center font-medium">Rank</div>
+          <div className="col-span-5 font-medium">User</div>
+          <div className="col-span-2 text-center font-medium">Items</div>
+          <div className="col-span-2 text-center font-medium">Tokens</div>
+          <div className="col-span-2 text-center font-medium">Submissions</div>
         </div>
 
-        {/* Loading State */}
-        {isLoading && (
+        {/* Body */}
+        {isLoading ? (
           <div className="p-8 flex justify-center">
-            <div className="animate-pulse flex flex-col items-center">
-              <div className="h-8 w-8 bg-slate-200 dark:bg-slate-700 rounded-full mb-2"></div>
-              <div className="h-4 w-32 bg-slate-200 dark:bg-slate-700 rounded mb-4"></div>
-              <div className="h-3 w-48 bg-slate-200 dark:bg-slate-700 rounded"></div>
-            </div>
+            <div className="animate-spin h-8 w-8 border-4 border-emerald-200 border-t-emerald-500 rounded-full"></div>
           </div>
-        )}
-
-        {/* Leaderboard Data */}
-        {!isLoading && (
+        ) : (
           <div className="divide-y divide-slate-200 dark:divide-slate-700">
             {leaderboardData.map((user) => (
               <div
                 key={user.id}
-                className={`grid grid-cols-12 gap-2 p-4 items-center ${
+                className={`grid grid-cols-12 gap-4 p-4 items-center ${
                   isCurrentUser(user)
                     ? "bg-emerald-50 dark:bg-emerald-900/10"
                     : ""
                 }`}
               >
                 {/* Rank */}
-                <div className="col-span-1 flex justify-center items-center">
+                <div className="col-span-1 flex justify-center">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      user.rank <= 3 ? "bg-slate-100 dark:bg-slate-700" : ""
-                    }`}
+                    className={`flex items-center justify-center w-8 h-8 rounded-full ${getRankColor(
+                      user.rank
+                    )}`}
                   >
                     {getRankIcon(user.rank)}
                   </div>
@@ -285,45 +268,40 @@ export default function LeaderboardContent() {
                 {/* User */}
                 <div className="col-span-5 flex items-center gap-3">
                   {user.image ? (
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden">
-                      <Image
-                        src={user.image}
-                        alt={user.name}
-                        fill
-                        style={{ objectFit: "cover" }}
-                      />
-                    </div>
+                    <Image
+                      src={user.image}
+                      alt={user.name}
+                      width={40}
+                      height={40}
+                      className="rounded-full"
+                    />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
-                      <FaUserCircle className="text-slate-400 text-2xl" />
+                      <Icons
+                        name="FaUserCircle"
+                        className="text-slate-400 text-xl"
+                      />
                     </div>
                   )}
                   <div>
-                    <p
-                      className={`font-medium ${
-                        isCurrentUser(user)
-                          ? "text-emerald-700 dark:text-emerald-300"
-                          : "text-slate-800 dark:text-white"
-                      }`}
-                    >
-                      {user.name} {isCurrentUser(user) && "(You)"}
+                    <p className="font-medium text-slate-800 dark:text-white flex items-center gap-2">
+                      {user.name}
+                      {isCurrentUser(user) && (
+                        <span className="text-xs bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 px-2 py-0.5 rounded-full">
+                          You
+                        </span>
+                      )}
                     </p>
-                    {user.rank <= 3 && (
-                      <p className={`text-xs ${getRankColor(user.rank)}`}>
-                        {user.rank === 1
-                          ? "Top Recycler"
-                          : user.rank === 2
-                          ? "Elite Recycler"
-                          : "Star Recycler"}
-                      </p>
-                    )}
                   </div>
                 </div>
 
                 {/* Items */}
                 <div className="col-span-2 flex flex-col items-center">
                   <div className="flex items-center gap-1">
-                    <FaRecycle className="text-emerald-500 text-sm" />
+                    <Icons
+                      name="FaRecycle"
+                      className="text-emerald-500 text-sm"
+                    />
                     <span className="font-medium text-slate-800 dark:text-white">
                       {user.totalItems}
                     </span>
@@ -333,7 +311,7 @@ export default function LeaderboardContent() {
                 {/* Tokens */}
                 <div className="col-span-2 flex flex-col items-center">
                   <div className="flex items-center gap-1">
-                    <FaCoins className="text-amber-500 text-sm" />
+                    <Icons name="FaCoins" className="text-amber-500 text-sm" />
                     <span className="font-medium text-slate-800 dark:text-white">
                       {user.totalTokens}
                     </span>
@@ -355,7 +333,7 @@ export default function LeaderboardContent() {
       {/* Info Section */}
       <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg p-6 mt-8">
         <div className="flex items-center gap-2 mb-4">
-          <FaTrophy className="text-emerald-500" />
+          <Icons name="FaTrophy" className="text-emerald-500" />
           <h3 className="text-lg font-medium text-slate-800 dark:text-white">
             How Rankings Work
           </h3>
@@ -380,7 +358,7 @@ export default function LeaderboardContent() {
 
         <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg flex items-center gap-3">
-            <FaMedal className="text-yellow-500 text-xl" />
+            <Icons name="FaMedal" className="text-yellow-500 text-xl" />
             <div>
               <p className="font-medium text-yellow-700 dark:text-yellow-300">
                 Top Recycler
@@ -391,7 +369,7 @@ export default function LeaderboardContent() {
             </div>
           </div>
           <div className="p-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center gap-3">
-            <FaMedal className="text-slate-400 text-xl" />
+            <Icons name="FaMedal" className="text-slate-400 text-xl" />
             <div>
               <p className="font-medium text-slate-700 dark:text-slate-300">
                 Elite Recycler
@@ -402,7 +380,7 @@ export default function LeaderboardContent() {
             </div>
           </div>
           <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg flex items-center gap-3">
-            <FaMedal className="text-amber-600 text-xl" />
+            <Icons name="FaMedal" className="text-amber-600 text-xl" />
             <div>
               <p className="font-medium text-amber-700 dark:text-amber-300">
                 Star Recycler

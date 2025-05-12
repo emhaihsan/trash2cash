@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  reactStrictMode: true,
   images: {
     remotePatterns: [
       {
@@ -23,6 +24,17 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
+  },
+  // Tambahkan konfigurasi untuk meningkatkan performa
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['react-icons'],
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+  },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
   },
 };
 

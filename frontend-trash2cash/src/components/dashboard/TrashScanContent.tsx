@@ -1,18 +1,23 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, lazy, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import {
-  FaCamera,
-  FaUpload,
-  FaCheck,
-  FaTimes,
-  FaSpinner,
-  FaInfoCircle,
-} from "react-icons/fa";
 import Image from "next/image";
-import { analyzeTrashImage, DetectedTrashItem } from "@/services/openrouter";
+import { DetectedTrashItem } from "@/services/openrouter";
+
+// Lazy import react-icons untuk mengurangi initial load
+import dynamic from "next/dynamic";
+
+// Lazy load OpenRouter service
+const analyzeTrashImageImport = () =>
+  import("@/services/openrouter").then((mod) => mod.analyzeTrashImage);
+
+// Lazy load icons
+const Icons = dynamic(() => import("@/components/ui/Icons"), {
+  ssr: false,
+  loading: () => <span className="w-4 h-4"></span>,
+});
 
 interface DetectedItem {
   name: string;
@@ -83,6 +88,9 @@ export default function TrashScanContent() {
     setError(null);
 
     try {
+      // Lazy import analyzeTrashImage function
+      const analyzeTrashImage = await analyzeTrashImageImport();
+
       // Gunakan OpenRouter AI untuk analisis
       const detectedTrashItems = await analyzeTrashImage(image);
       setDetectedItems(detectedTrashItems);
@@ -145,7 +153,7 @@ export default function TrashScanContent() {
         "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
     };
 
-    return colors[category];
+    return colors[category] || colors.other;
   };
 
   return (
@@ -164,7 +172,10 @@ export default function TrashScanContent() {
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-red-100 dark:bg-red-800 rounded-full">
-              <FaTimes className="text-red-600 dark:text-red-400" />
+              <Icons
+                name="FaTimes"
+                className="text-red-600 dark:text-red-400"
+              />
             </div>
             <p className="text-red-700 dark:text-red-400">{error}</p>
           </div>
@@ -176,7 +187,10 @@ export default function TrashScanContent() {
         <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-emerald-100 dark:bg-emerald-800 rounded-full">
-              <FaCheck className="text-emerald-600 dark:text-emerald-400" />
+              <Icons
+                name="FaCheck"
+                className="text-emerald-600 dark:text-emerald-400"
+              />
             </div>
             <div>
               <p className="text-emerald-700 dark:text-emerald-400 font-medium">
@@ -216,12 +230,15 @@ export default function TrashScanContent() {
                   onClick={resetForm}
                   className="absolute top-2 right-2 p-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full"
                 >
-                  <FaTimes />
+                  <Icons name="FaTimes" />
                 </button>
               </div>
             ) : (
               <div className="w-full max-w-md h-64 bg-slate-100 dark:bg-slate-700 rounded-lg flex flex-col items-center justify-center">
-                <FaCamera className="text-4xl text-slate-400 dark:text-slate-500 mb-3" />
+                <Icons
+                  name="FaCamera"
+                  className="text-4xl text-slate-400 dark:text-slate-500 mb-3"
+                />
                 <p className="text-slate-500 dark:text-slate-400 text-center max-w-xs">
                   Take a clear photo of your recyclable items. Make sure items
                   are visible and well-lit.
@@ -242,7 +259,7 @@ export default function TrashScanContent() {
                 onClick={triggerFileInput}
                 className="mt-4 py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center gap-2 transition-colors"
               >
-                <FaUpload />
+                <Icons name="FaUpload" />
                 Select Image
               </button>
             )}
@@ -257,12 +274,12 @@ export default function TrashScanContent() {
               >
                 {isAnalyzing ? (
                   <>
-                    <FaSpinner className="animate-spin" />
+                    <Icons name="FaSpinner" className="animate-spin" />
                     Analyzing with AI...
                   </>
                 ) : (
                   <>
-                    <FaCamera />
+                    <Icons name="FaCamera" />
                     Analyze with AI
                   </>
                 )}
@@ -324,12 +341,12 @@ export default function TrashScanContent() {
             >
               {isUploading ? (
                 <>
-                  <FaSpinner className="animate-spin" />
+                  <Icons name="FaSpinner" className="animate-spin" />
                   Submitting...
                 </>
               ) : (
                 <>
-                  <FaCheck />
+                  <Icons name="FaCheck" />
                   Submit Items
                 </>
               )}
@@ -341,7 +358,7 @@ export default function TrashScanContent() {
       {/* How It Works Section - Permanent di bagian bawah */}
       <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg p-6 mt-8">
         <div className="flex items-center gap-2 mb-4">
-          <FaInfoCircle className="text-emerald-500" />
+          <Icons name="FaInfoCircle" className="text-emerald-500" />
           <h3 className="text-lg font-medium text-slate-800 dark:text-white">
             How Trash2Cash Works
           </h3>

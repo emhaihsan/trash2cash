@@ -1,22 +1,24 @@
 import OpenAI from 'openai';
 
-// Inisialisasi OpenAI client dengan OpenRouter endpoint
-const openai = new OpenAI({
-  baseURL: 'https://openrouter.ai/api/v1',
-  apiKey: process.env.NEXT_PUBLIC_OPENROUTER_API_KEY as string,
-  defaultHeaders: {
-    'HTTP-Referer': 'https://trash2cash.io', // Site URL untuk ranking di openrouter.ai
-    'X-Title': 'Trash2Cash', // Site title untuk ranking di openrouter.ai
-  },
-  dangerouslyAllowBrowser:true
-});
-
 // Interface untuk hasil deteksi sampah
 export interface DetectedTrashItem {
   name: string;
   confidence: number;
   category: "plastic" | "paper" | "metal" | "glass" | "organic" | "other";
   tokenValue: number;
+}
+
+// Lazy initialization - buat fungsi untuk membuat client hanya ketika diperlukan
+export function getOpenAIClient() {
+  return new OpenAI({
+    baseURL: 'https://openrouter.ai/api/v1',
+    apiKey: process.env.NEXT_PUBLIC_OPENROUTER_API_KEY as string,
+    defaultHeaders: {
+      'HTTP-Referer': 'https://trash2cash.io', // Site URL untuk ranking di openrouter.ai
+      'X-Title': 'Trash2Cash', // Site title untuk ranking di openrouter.ai
+    },
+    dangerouslyAllowBrowser: true
+  });
 }
 
 /**
@@ -26,6 +28,9 @@ export interface DetectedTrashItem {
  */
 export async function analyzeTrashImage(imageBase64: string): Promise<DetectedTrashItem[]> {
   try {
+    // Buat client hanya ketika dibutuhkan
+    const openai = getOpenAIClient();
+    
     // Hapus prefix data:image/jpeg;base64, jika ada
     const base64Image = imageBase64.replace(/^data:image\/\w+;base64,/, '');
     
