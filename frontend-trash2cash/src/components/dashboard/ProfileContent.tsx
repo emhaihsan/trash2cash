@@ -20,7 +20,6 @@ export default function ProfileContent() {
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [fullName, setFullName] = useState(session?.user?.name || "");
-  const [email, setEmail] = useState(session?.user?.email || "");
   const [avatarUrl, setAvatarUrl] = useState(session?.user?.image || "");
   const [tempAvatarUrl, setTempAvatarUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -155,54 +154,43 @@ export default function ProfileContent() {
 
       {/* Profile Card */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 mb-6">
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+        <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
           {/* Avatar */}
           <div className="relative">
-            {isEditing && tempAvatarUrl ? (
-              <div className="relative w-24 h-24 rounded-full overflow-hidden">
+            <div className="h-24 w-24 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700">
+              {tempAvatarUrl || avatarUrl ? (
                 <Image
-                  src={tempAvatarUrl}
+                  src={tempAvatarUrl || avatarUrl}
                   alt="Profile"
-                  fill
-                  style={{ objectFit: "cover" }}
-                  className="rounded-full"
+                  width={96}
+                  height={96}
+                  className="h-full w-full object-cover"
                 />
-              </div>
-            ) : avatarUrl ? (
-              <div className="relative w-24 h-24 rounded-full overflow-hidden">
-                <Image
-                  src={avatarUrl}
-                  alt="Profile"
-                  fill
-                  style={{ objectFit: "cover" }}
-                  className="rounded-full"
-                />
-              </div>
-            ) : (
-              <div className="w-24 h-24 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
-                <FaUserCircle className="text-5xl text-slate-400 dark:text-slate-500" />
-              </div>
-            )}
+              ) : (
+                <FaUserCircle className="h-full w-full text-slate-400 dark:text-slate-500" />
+              )}
+            </div>
 
             {isEditing && (
-              <button
-                onClick={triggerFileInput}
-                className="absolute bottom-0 right-0 p-2 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors"
-              >
-                <FaEdit size={14} />
-              </button>
+              <>
+                <button
+                  onClick={triggerFileInput}
+                  className="absolute bottom-0 right-0 p-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full"
+                >
+                  <FaEdit className="h-3.5 w-3.5" />
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                />
+              </>
             )}
-
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleAvatarChange}
-              accept="image/*"
-              className="hidden"
-            />
           </div>
 
-          {/* User Info */}
+          {/* Profile Info */}
           <div className="flex-1">
             {isEditing ? (
               <div className="space-y-4">
@@ -231,7 +219,7 @@ export default function ProfileContent() {
                   <input
                     type="email"
                     id="email"
-                    value={email}
+                    value={session?.user?.email || ""}
                     disabled
                     className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed"
                   />

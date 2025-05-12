@@ -8,8 +8,6 @@ import {
   FaExchangeAlt,
   FaCamera,
   FaUserAlt,
-  FaCog,
-  FaQuestionCircle,
 } from "react-icons/fa";
 
 interface NavItem {
@@ -47,16 +45,6 @@ export default function DashboardSidebar() {
       href: "/dashboard/profile",
       icon: <FaUserAlt />,
     },
-    {
-      label: "Settings",
-      href: "/dashboard/settings",
-      icon: <FaCog />,
-    },
-    {
-      label: "Help",
-      href: "/dashboard/help",
-      icon: <FaQuestionCircle />,
-    },
   ];
 
   return (
@@ -81,7 +69,7 @@ export default function DashboardSidebar() {
       {/* Mobile Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 md:hidden z-20">
         <div className="flex justify-around">
-          {navItems.slice(0, 5).map((item) => (
+          {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
