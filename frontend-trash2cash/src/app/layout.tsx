@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import AuthProvider from "@/components/providers/AuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
     "recycling",
     "environmental innovation",
   ],
-  themeColor: "#10b981",
+  metadataBase: new URL("https://trash2cash.io"),
   openGraph: {
     title: "Trash2Cash — The Trash2Earn Revolution",
     description:
@@ -56,6 +57,10 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#10b981",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -69,7 +74,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

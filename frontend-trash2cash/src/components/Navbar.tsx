@@ -1,8 +1,8 @@
 // src/components/Navbar.tsx
 "use client";
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { FaLeaf, FaRecycle } from "react-icons/fa";
+import LoginButton from "./auth/LoginButton";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -87,9 +87,7 @@ export default function Navbar() {
         >
           How It Works
         </a>
-        <button className="px-5 py-2 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-semibold shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300">
-          Connect Wallet
-        </button>
+        {/* <LoginButton /> */}
       </div>
     </nav>
   );

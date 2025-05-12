@@ -1,8 +1,8 @@
 // src/components/landing/Hero.tsx
 "use client";
-import Image from "next/image";
 import { FaLeaf, FaRecycle } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import LoginButton from "../auth/LoginButton";
 
 export default function Hero() {
   const [mounted, setMounted] = useState(false);
@@ -74,12 +74,11 @@ export default function Hero() {
           }`}
           style={{ animationDelay: "600ms" }}
         >
-          <button className="px-8 py-4 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-semibold text-lg shadow-xl hover:shadow-emerald-500/20 hover:scale-105 transition-all duration-300">
-            Connect Wallet
-          </button>
+          <LoginButton />
+          {/*           
           <button className="px-8 py-4 rounded-full bg-white/10 backdrop-blur-sm text-white border border-white/20 font-semibold text-lg shadow-lg hover:bg-white/20 hover:scale-105 transition-all duration-300">
             Learn More
-          </button>
+          </button> */}
         </div>
 
         {/* Stats */}

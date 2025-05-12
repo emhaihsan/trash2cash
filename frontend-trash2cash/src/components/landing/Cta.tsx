@@ -31,7 +31,7 @@ export default function Cta() {
           </span>
 
           <h2 className="text-4xl sm:text-5xl font-bold text-slate-700 mb-6">
-            Ingin Mengetahui Lebih Dalam Tentang{" "}
+            Want to Learn More About{" "}
             <span className="bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">
               Trash2Cash
             </span>
@@ -39,8 +39,8 @@ export default function Cta() {
           </h2>
 
           <p className="text-xl text-slate-600 mb-10 max-w-3xl mx-auto">
-            Pelajari teknologi, tokenomics, dan visi jangka panjang kami dalam
-            whitepaper resmi Trash2Cash.
+            Discover our technology, tokenomics, and long-term vision in the
+            official Trash2Cash whitepaper.
           </p>
 
           <Link
@@ -48,7 +48,7 @@ export default function Cta() {
             className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-400 to-cyan-400 text-slate-900 font-semibold rounded-full shadow-lg hover:shadow-emerald-500/30 hover:scale-105 transition-all duration-300"
           >
             <FaFileAlt className="text-slate-900" />
-            Baca Whitepaper
+            Read Whitepaper
             <FaArrowRight className="text-slate-900" />
           </Link>
 
@@ -58,22 +58,24 @@ export default function Cta() {
                 Tokenomics
               </div>
               <div className="text-slate-300 text-sm">
-                Distribusi & ekonomi token
+                Distribution & token economy
               </div>
             </div>
             <div className="bg-slate-800/70 backdrop-blur-sm p-4 rounded-xl border border-slate-700/80 hover:border-cyan-500/30 transition-colors">
               <div className="text-cyan-300 font-semibold mb-1">Roadmap</div>
-              <div className="text-slate-300 text-sm">Rencana pengembangan</div>
+              <div className="text-slate-300 text-sm">Development plans</div>
             </div>
             <div className="bg-slate-800/70 backdrop-blur-sm p-4 rounded-xl border border-slate-700/80 hover:border-sky-500/30 transition-colors">
-              <div className="text-sky-300 font-semibold mb-1">Teknologi</div>
+              <div className="text-sky-300 font-semibold mb-1">Technology</div>
               <div className="text-slate-300 text-sm">AI & blockchain</div>
             </div>
             <div className="bg-slate-800/70 backdrop-blur-sm p-4 rounded-xl border border-slate-700/80 hover:border-indigo-500/30 transition-colors">
               <div className="text-indigo-300 font-semibold mb-1">
-                Ekosistem
+                Ecosystem
               </div>
-              <div className="text-slate-300 text-sm">Partner & integrasi</div>
+              <div className="text-slate-300 text-sm">
+                Partners & integrations
+              </div>
             </div>
           </div>
         </div>
