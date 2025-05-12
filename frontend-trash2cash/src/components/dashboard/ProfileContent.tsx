@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
@@ -11,6 +11,7 @@ import {
   FaSpinner,
 } from "react-icons/fa";
 import Image from "next/image";
+import { getUserData, updateUserProfile } from "@/services/supabase";
 
 export default function ProfileContent() {
   const { data: session, status, update } = useSession();
@@ -24,6 +25,39 @@ export default function ProfileContent() {
   const [tempAvatarUrl, setTempAvatarUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [userStats, setUserStats] = useState({
+    submissions: 0,
+    itemsRecycled: 0,
+    totalTokens: 0,
+  });
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+
+  // Fetch user data from Supabase
+  useEffect(() => {
+    if (session?.user?.id) {
+      const fetchUserData = async () => {
+        try {
+          const userData = await getUserData(session?.user?.id as string);
+
+          // Update user stats
+          setUserStats({
+            submissions: userData.submissions || 0,
+            itemsRecycled: userData.items_recycled || 0,
+            totalTokens: userData.total_tokens || 0,
+          });
+
+          // Always update local state with database values
+          // This ensures we always use the database as source of truth
+          setFullName(userData.name || "");
+          setAvatarUrl(userData.image || "");
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+
+      fetchUserData();
+    }
+  }, [session]);
 
   // Redirect if not authenticated
   if (status === "unauthenticated") {
@@ -55,6 +89,9 @@ export default function ProfileContent() {
       return;
     }
 
+    // Save file for later upload
+    setAvatarFile(file);
+
     // Create preview
     const reader = new FileReader();
     reader.onload = () => {
@@ -68,31 +105,80 @@ export default function ProfileContent() {
   };
 
   const handleSaveProfile = async () => {
+    if (!session?.user?.id) return;
+
     setIsUploading(true);
     setError(null);
     setSuccessMessage(null);
 
     try {
-      // Simulate API call with a timeout
-      // In a real app, you would call your backend API here
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      let newImageUrl = avatarUrl;
 
-      // Update avatar if changed
-      if (tempAvatarUrl) {
-        setAvatarUrl(tempAvatarUrl);
-        setTempAvatarUrl("");
+      // Upload new avatar if changed
+      if (avatarFile) {
+        try {
+          // Gunakan API endpoint untuk upload gambar
+          const formData = new FormData();
+          formData.append("file", avatarFile);
+
+          const response = await fetch("/api/user/upload-image", {
+            method: "POST",
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            throw new Error(result.error || "Failed to upload image");
+          }
+
+          newImageUrl = result.imageUrl;
+          console.log("Image uploaded successfully:", newImageUrl);
+        } catch (uploadError: any) {
+          console.error("Error uploading image:", uploadError);
+          setError(
+            uploadError.message || "Failed to upload image. Please try again."
+          );
+          setIsUploading(false);
+          return;
+        }
+      }
+
+      // Update user profile in Supabase (nama saja, gambar sudah diupdate oleh API)
+      if (fullName !== session.user.name) {
+        try {
+          const updatedUser = await updateUserProfile(
+            session.user.id as string,
+            {
+              name: fullName,
+            }
+          );
+          console.log("Profile name updated successfully:", updatedUser);
+        } catch (updateError: any) {
+          console.error("Error updating profile name:", updateError);
+          setError(
+            updateError.message ||
+              "Failed to update profile name. Please try again."
+          );
+          setIsUploading(false);
+          return;
+        }
       }
 
       // Update session data
       await update({
         ...session,
         user: {
-          ...session?.user,
+          ...session.user,
           name: fullName,
-          image: tempAvatarUrl || avatarUrl,
+          image: newImageUrl,
         },
       });
 
+      // Reset states
+      setAvatarUrl(newImageUrl);
+      setTempAvatarUrl("");
+      setAvatarFile(null);
       setIsEditing(false);
       setSuccessMessage("Profile updated successfully!");
 
@@ -100,9 +186,9 @@ export default function ProfileContent() {
       setTimeout(() => {
         setSuccessMessage(null);
       }, 3000);
-    } catch (err) {
-      setError("Failed to update profile. Please try again.");
-      console.error(err);
+    } catch (err: any) {
+      console.error("General error in profile update:", err);
+      setError(err.message || "Failed to update profile. Please try again.");
     } finally {
       setIsUploading(false);
     }
@@ -112,6 +198,7 @@ export default function ProfileContent() {
     setIsEditing(false);
     setFullName(session?.user?.name || "");
     setTempAvatarUrl("");
+    setAvatarFile(null);
     setError(null);
   };
 
@@ -154,40 +241,37 @@ export default function ProfileContent() {
 
       {/* Profile Card */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 mb-6">
-        <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+        <div className="flex flex-col md:flex-row md:items-center gap-6">
           {/* Avatar */}
-          <div className="relative">
-            <div className="h-24 w-24 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700">
+          <div className="flex flex-col items-center gap-3">
+            <div className="relative">
               {tempAvatarUrl || avatarUrl ? (
                 <Image
                   src={tempAvatarUrl || avatarUrl}
                   alt="Profile"
-                  width={96}
-                  height={96}
-                  className="h-full w-full object-cover"
+                  width={120}
+                  height={120}
+                  className="rounded-full object-cover border-4 border-emerald-100 dark:border-emerald-900"
                 />
               ) : (
-                <FaUserCircle className="h-full w-full text-slate-400 dark:text-slate-500" />
+                <FaUserCircle className="w-32 h-32 text-slate-400" />
               )}
-            </div>
-
-            {isEditing && (
-              <>
+              {isEditing && (
                 <button
                   onClick={triggerFileInput}
-                  className="absolute bottom-0 right-0 p-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full"
+                  className="absolute bottom-0 right-0 p-2 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 transition-colors"
                 >
-                  <FaEdit className="h-3.5 w-3.5" />
+                  <FaEdit />
                 </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  className="hidden"
-                />
-              </>
-            )}
+              )}
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="hidden"
+            />
           </div>
 
           {/* Profile Info */}
@@ -196,17 +280,17 @@ export default function ProfileContent() {
               <div className="space-y-4">
                 <div>
                   <label
-                    htmlFor="fullName"
+                    htmlFor="name"
                     className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
                   >
                     Full Name
                   </label>
                   <input
                     type="text"
-                    id="fullName"
+                    id="name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
                   />
                 </div>
                 <div>
@@ -232,7 +316,7 @@ export default function ProfileContent() {
             ) : (
               <div>
                 <h2 className="text-xl font-semibold text-slate-800 dark:text-white">
-                  {session?.user?.name || "User"}
+                  {fullName || "User"}
                 </h2>
                 <p className="text-slate-500 dark:text-slate-400 mt-1">
                   {session?.user?.email || "No email available"}
@@ -296,7 +380,7 @@ export default function ProfileContent() {
               Total Submissions
             </p>
             <p className="text-2xl font-bold text-slate-800 dark:text-white">
-              12
+              {userStats.submissions}
             </p>
           </div>
           <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
@@ -304,7 +388,7 @@ export default function ProfileContent() {
               Items Recycled
             </p>
             <p className="text-2xl font-bold text-slate-800 dark:text-white">
-              42
+              {userStats.itemsRecycled}
             </p>
           </div>
           <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
@@ -312,7 +396,7 @@ export default function ProfileContent() {
               Tokens Earned
             </p>
             <p className="text-2xl font-bold text-slate-800 dark:text-white">
-              230 T2C
+              {userStats.totalTokens} T2C
             </p>
           </div>
         </div>

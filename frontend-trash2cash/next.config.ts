@@ -23,6 +23,12 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "efbcuufvbnladfiwzwzh.supabase.co",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   // Tambahkan konfigurasi untuk meningkatkan performa

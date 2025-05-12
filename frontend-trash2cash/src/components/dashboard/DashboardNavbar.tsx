@@ -1,11 +1,12 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ProfileSkeleton } from "../ui/SkeletonLoader";
 import CustomWalletButton from "../ui/CustomWalletButton";
 import dynamic from "next/dynamic";
+import { getUserData } from "@/services/supabase";
 
 // Lazy load Icons component
 const Icons = dynamic(() => import("@/components/ui/Icons"), {
@@ -16,6 +17,34 @@ const Icons = dynamic(() => import("@/components/ui/Icons"), {
 export default function DashboardNavbar() {
   const { data: session, status } = useSession();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [userData, setUserData] = useState({
+    name: "",
+    image: "",
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch user data from Supabase
+  useEffect(() => {
+    if (session?.user?.id) {
+      const fetchUserData = async () => {
+        try {
+          const data = await getUserData(session.user.id as string);
+          setUserData({
+            name: data.name || session.user.name || "",
+            image: data.image || session.user.image || "",
+          });
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchUserData();
+    } else {
+      setIsLoading(false);
+    }
+  }, [session]);
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white dark:bg-slate-800 shadow-sm z-20 px-6 py-3 flex items-center justify-between">
@@ -35,17 +64,17 @@ export default function DashboardNavbar() {
         </div>
 
         <div className="relative">
-          {status === "loading" ? (
+          {status === "loading" || isLoading ? (
             <ProfileSkeleton />
           ) : (
             <button
               className="flex items-center gap-2 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
               onClick={() => setIsProfileOpen(!isProfileOpen)}
             >
-              {session?.user?.image ? (
+              {userData.image ? (
                 <img
-                  src={session.user.image}
-                  alt={session.user.name || "User"}
+                  src={userData.image + `?v=${new Date().getTime()}`}
+                  alt={userData.name || "User"}
                   className="w-8 h-8 rounded-full"
                 />
               ) : (
@@ -59,7 +88,7 @@ export default function DashboardNavbar() {
             <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-md shadow-lg py-1 z-10 border border-slate-200 dark:border-slate-700">
               <div className="px-4 py-2 border-b border-slate-200 dark:border-slate-700">
                 <p className="font-medium text-slate-800 dark:text-white">
-                  {session?.user?.name || "User"}
+                  {userData.name || "User"}
                 </p>
                 <p className="text-sm text-slate-500 dark:text-slate-400 truncate">
                   {session?.user?.email || ""}

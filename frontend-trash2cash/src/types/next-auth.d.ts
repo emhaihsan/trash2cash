@@ -2,11 +2,18 @@ import NextAuth, { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
   /**
-   * Extending the built-in session types
+   * Menambahkan tipe untuk JWT
+   */
+  interface JWT {
+    userId?: string;
+  }
+
+  /**
+   * Menambahkan tipe untuk Session
    */
   interface Session {
-    user?: DefaultSession["user"] & {
+    user: {
       id?: string;
-    };
+    } & DefaultSession["user"];
   }
 }
