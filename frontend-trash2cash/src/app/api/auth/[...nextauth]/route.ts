@@ -19,6 +19,17 @@ const handler = NextAuth({
     async jwt({ token, user, account, profile }) {
       return token;
     },
+    async redirect({ url, baseUrl }) {
+      // Redirect to dashboard after sign in
+      if (url.startsWith(baseUrl)) {
+        return `${baseUrl}/dashboard`;
+      }
+      // If it's an absolute URL, allow it
+      else if (url.startsWith("http")) {
+        return url;
+      }
+      return baseUrl;
+    },
   },
 });
 
