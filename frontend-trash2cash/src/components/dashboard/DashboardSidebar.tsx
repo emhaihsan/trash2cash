@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   FaHome,
-  FaRecycle,
   FaCoins,
   FaExchangeAlt,
   FaCamera,
@@ -27,11 +26,6 @@ export default function DashboardSidebar() {
       label: "Overview",
       href: "/dashboard",
       icon: <FaHome />,
-    },
-    {
-      label: "Recycle",
-      href: "/dashboard/recycle",
-      icon: <FaRecycle />,
     },
     {
       label: "Scan Trash",

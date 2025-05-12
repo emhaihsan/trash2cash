@@ -3,8 +3,9 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { FaRecycle, FaLeaf, FaCoins, FaHistory } from "react-icons/fa";
+import { FaRecycle, FaCoins, FaHistory, FaCamera } from "react-icons/fa";
 import { DashboardSkeleton } from "../ui/SkeletonLoader";
+import Link from "next/link";
 
 export default function DashboardContent() {
   const { data: session, status } = useSession();
@@ -33,35 +34,63 @@ export default function DashboardContent() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <StatsCard
-          title="Total Trash Recycled"
-          value="125 kg"
+          title="Total Items Recycled"
+          value="42"
           icon={<FaRecycle className="text-emerald-500" />}
-          change="+12% from last month"
-          positive={true}
-        />
-        <StatsCard
-          title="Environmental Impact"
-          value="87 kg CO₂"
-          icon={<FaLeaf className="text-green-500" />}
-          change="+8% from last month"
-          positive={true}
         />
         <StatsCard
           title="Tokens Earned"
           value="230 T2C"
           icon={<FaCoins className="text-amber-500" />}
-          change="+15% from last month"
-          positive={true}
         />
         <StatsCard
           title="Total Submissions"
-          value="42"
+          value="12"
           icon={<FaHistory className="text-blue-500" />}
-          change="+5% from last month"
-          positive={true}
         />
+      </div>
+
+      {/* Quick Actions */}
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+        <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">
+          Quick Actions
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Link
+            href="/dashboard/scan"
+            className="flex items-center gap-3 p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors"
+          >
+            <div className="p-3 bg-emerald-100 dark:bg-emerald-800 rounded-full">
+              <FaCamera className="text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <div>
+              <h3 className="font-medium text-slate-800 dark:text-white">
+                Scan Trash
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Upload a photo to identify and recycle items
+              </p>
+            </div>
+          </Link>
+          <Link
+            href="/dashboard/tokens"
+            className="flex items-center gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+          >
+            <div className="p-3 bg-amber-100 dark:bg-amber-800 rounded-full">
+              <FaCoins className="text-amber-600 dark:text-amber-400" />
+            </div>
+            <div>
+              <h3 className="font-medium text-slate-800 dark:text-white">
+                View Tokens
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Check your token balance and history
+              </p>
+            </div>
+          </Link>
+        </div>
       </div>
 
       {/* Recent Activity */}
@@ -70,7 +99,7 @@ export default function DashboardContent() {
           Recent Activity
         </h2>
         <div className="space-y-4">
-          {recentActivities.map((activity, index) => (
+          {recentActivities.slice(0, 2).map((activity, index) => (
             <ActivityItem key={index} {...activity} />
           ))}
         </div>
@@ -83,11 +112,9 @@ interface StatsCardProps {
   title: string;
   value: string;
   icon: React.ReactNode;
-  change: string;
-  positive: boolean;
 }
 
-function StatsCard({ title, value, icon, change, positive }: StatsCardProps) {
+function StatsCard({ title, value, icon }: StatsCardProps) {
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
       <div className="flex justify-between items-start">
@@ -100,15 +127,6 @@ function StatsCard({ title, value, icon, change, positive }: StatsCardProps) {
         <div className="p-3 bg-slate-100 dark:bg-slate-700 rounded-lg">
           {icon}
         </div>
-      </div>
-      <div
-        className={`mt-4 text-xs ${
-          positive
-            ? "text-emerald-500 dark:text-emerald-400"
-            : "text-red-500 dark:text-red-400"
-        }`}
-      >
-        {change}
       </div>
     </div>
   );
@@ -176,11 +194,5 @@ const recentActivities = [
     description: "Exchanged 50 T2C for rewards",
     time: "May 10, 2:20 PM",
     status: "pending" as const,
-  },
-  {
-    type: "Glass Recycling",
-    description: "Submission verification failed",
-    time: "May 8, 11:45 AM",
-    status: "failed" as const,
   },
 ];
