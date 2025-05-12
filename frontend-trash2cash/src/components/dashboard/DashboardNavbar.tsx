@@ -4,9 +4,10 @@ import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
 import { FaRecycle, FaBell, FaUserCircle } from "react-icons/fa";
 import Link from "next/link";
+import { ProfileSkeleton } from "../ui/SkeletonLoader";
 
 export default function DashboardNavbar() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   return (
@@ -27,25 +28,29 @@ export default function DashboardNavbar() {
         </button>
 
         <div className="relative">
-          <button
-            className="flex items-center gap-2 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
-            onClick={() => setIsProfileOpen(!isProfileOpen)}
-          >
-            {session?.user?.image ? (
-              <img
-                src={session.user.image}
-                alt={session.user.name || "User"}
-                className="w-8 h-8 rounded-full"
-              />
-            ) : (
-              <FaUserCircle className="text-2xl text-slate-600 dark:text-slate-300" />
-            )}
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-200 hidden sm:block">
-              {session?.user?.name || "User"}
-            </span>
-          </button>
+          {status === "loading" ? (
+            <ProfileSkeleton />
+          ) : (
+            <button
+              className="flex items-center gap-2 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700"
+              onClick={() => setIsProfileOpen(!isProfileOpen)}
+            >
+              {session?.user?.image ? (
+                <img
+                  src={session.user.image}
+                  alt={session.user.name || "User"}
+                  className="w-8 h-8 rounded-full"
+                />
+              ) : (
+                <FaUserCircle className="text-2xl text-slate-600 dark:text-slate-300" />
+              )}
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-200 hidden sm:block">
+                {session?.user?.name || "User"}
+              </span>
+            </button>
+          )}
 
-          {isProfileOpen && (
+          {isProfileOpen && status !== "loading" && (
             <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-md shadow-lg py-1 z-10 border border-slate-200 dark:border-slate-700">
               <div className="px-4 py-2 border-b border-slate-200 dark:border-slate-700">
                 <p className="text-sm font-medium text-slate-700 dark:text-slate-200">

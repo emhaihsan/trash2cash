@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { FaRecycle, FaLeaf, FaCoins, FaHistory } from "react-icons/fa";
+import { DashboardSkeleton } from "../ui/SkeletonLoader";
 
 export default function DashboardContent() {
   const { data: session, status } = useSession();
@@ -17,11 +18,7 @@ export default function DashboardContent() {
   }, [status, router]);
 
   if (status === "loading") {
-    return (
-      <div className="flex items-center justify-center min-h-[80vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (
