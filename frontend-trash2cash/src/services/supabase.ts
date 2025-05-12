@@ -101,3 +101,50 @@ export async function deleteUserProfile(userId: string) {
     throw error;
   }
 }
+
+// Fungsi untuk mendapatkan statistik user
+export async function getUserStats(userId: string) {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('submissions, items_recycled, total_tokens')
+      .eq('id', userId)
+      .single();
+
+    if (error) {
+      console.error('Supabase fetch error:', error);
+      throw error;
+    }
+    
+    return {
+      submissions: data.submissions || 0,
+      itemsRecycled: data.items_recycled || 0,
+      totalTokens: data.total_tokens || 0
+    };
+  } catch (error) {
+    console.error('Error fetching user stats:', error);
+    throw error;
+  }
+}
+
+// Fungsi untuk mendapatkan aktivitas terbaru user
+export async function getUserActivities(userId: string, limit: number = 5) {
+  try {
+    const { data, error } = await supabase
+      .from('activities')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error('Supabase fetch error:', error);
+      throw error;
+    }
+    
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching user activities:', error);
+    return [];
+  }
+}

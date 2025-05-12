@@ -2,15 +2,59 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FaRecycle, FaCoins, FaHistory, FaCamera } from "react-icons/fa";
 import { DashboardSkeleton } from "../ui/SkeletonLoader";
-import { recentActivities } from "../dummies";
 import Link from "next/link";
+import {
+  getUserStats,
+  getUserActivities,
+  getUserData,
+} from "@/services/supabase";
 
 export default function DashboardContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [userName, setUserName] = useState("");
+  const [stats, setStats] = useState({
+    submissions: 0,
+    itemsRecycled: 0,
+    totalTokens: 0,
+  });
+  const [activities, setActivities] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch user data from Supabase
+  useEffect(() => {
+    if (session?.user?.id) {
+      const fetchData = async () => {
+        try {
+          // Fetch user data
+          const userData = await getUserData(session.user.id as string);
+          setUserName(userData.name || session.user.name || "User");
+
+          // Fetch user stats
+          const userStats = await getUserStats(session.user.id as string);
+          setStats(userStats);
+
+          // Fetch user activities
+          const userActivities = await getUserActivities(
+            session.user.id as string,
+            5
+          );
+          setActivities(userActivities);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchData();
+    } else if (status !== "loading") {
+      setIsLoading(false);
+    }
+  }, [session, status]);
 
   // Redirect to home if not authenticated
   useEffect(() => {
@@ -19,9 +63,27 @@ export default function DashboardContent() {
     }
   }, [status, router]);
 
-  if (status === "loading") {
+  if (status === "loading" || isLoading) {
     return <DashboardSkeleton />;
   }
+
+  // Format activity data for display
+  const formatActivities =
+    activities.length > 0
+      ? activities.map((activity) => ({
+          type: activity.activity_type || "Recycling",
+          description: activity.description || "Activity recorded",
+          time: new Date(activity.created_at).toLocaleString(),
+          status: activity.status || "success",
+        }))
+      : [
+          {
+            type: "Welcome",
+            description: "Start recycling to see your activities here",
+            time: new Date().toLocaleString(),
+            status: "success" as const,
+          },
+        ];
 
   return (
     <div className="space-y-6">
@@ -30,7 +92,7 @@ export default function DashboardContent() {
           Dashboard
         </h1>
         <p className="text-slate-600 dark:text-slate-300">
-          Welcome back, {session?.user?.name || "User"}!
+          Welcome back, {userName}!
         </p>
       </div>
 
@@ -38,17 +100,17 @@ export default function DashboardContent() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <StatsCard
           title="Total Items Recycled"
-          value="42"
+          value={stats.itemsRecycled.toString()}
           icon={<FaRecycle className="text-emerald-500" />}
         />
         <StatsCard
           title="Tokens Earned"
-          value="230 T2C"
+          value={`${stats.totalTokens} T2C`}
           icon={<FaCoins className="text-amber-500" />}
         />
         <StatsCard
           title="Total Submissions"
-          value="12"
+          value={stats.submissions.toString()}
           icon={<FaHistory className="text-blue-500" />}
         />
       </div>
@@ -100,7 +162,7 @@ export default function DashboardContent() {
           Recent Activity
         </h2>
         <div className="space-y-4">
-          {recentActivities.slice(0, 2).map((activity, index) => (
+          {formatActivities.slice(0, 3).map((activity, index) => (
             <ActivityItem key={index} {...activity} />
           ))}
         </div>
@@ -167,7 +229,9 @@ function ActivityItem({ type, description, time, status }: ActivityItemProps) {
           {time}
         </span>
         <span
-          className={`text-xs px-2 py-1 rounded-full mt-1 ${statusColors[status]}`}
+          className={`text-xs px-2 py-1 rounded-full mt-1 ${
+            statusColors[status as keyof typeof statusColors]
+          }`}
         >
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </span>
