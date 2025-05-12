@@ -14,7 +14,7 @@ const config = getDefaultConfig({
   projectId: process.env.NEXT_PUBLIC_REOWN_PROJECT_ID as string,
   chains: [sepolia],
   transports: {
-    [sepolia.id]: http(),
+    [sepolia.id]: http(process.env.NEXT_PUBLIC_SEPOLIA_RPC),
   },
 });
 

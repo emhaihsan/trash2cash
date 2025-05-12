@@ -9,8 +9,10 @@ import {
   FaCheck,
   FaTimes,
   FaSpinner,
+  FaRobot,
 } from "react-icons/fa";
 import Image from "next/image";
+import { analyzeTrashImage, DetectedTrashItem } from "@/services/openrouter";
 
 interface DetectedItem {
   name: string;
@@ -32,6 +34,7 @@ export default function TrashScanContent() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [totalTokens, setTotalTokens] = useState(0);
+  const [useAI, setUseAI] = useState(true); // Toggle untuk AI vs simulasi
 
   // Redirect if not authenticated
   if (status === "unauthenticated") {
@@ -81,37 +84,47 @@ export default function TrashScanContent() {
     setError(null);
 
     try {
-      // Simulate AI analysis with a timeout
-      // In a real app, you would call an AI service API here
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      if (useAI && process.env.NEXT_PUBLIC_OPENROUTER_API_KEY) {
+        // Gunakan OpenRouter AI untuk analisis
+        const detectedTrashItems = await analyzeTrashImage(image);
+        setDetectedItems(detectedTrashItems);
+        setTotalTokens(
+          detectedTrashItems.reduce((sum, item) => sum + item.tokenValue, 0)
+        );
+      } else {
+        // Simulasi AI analysis dengan timeout
+        await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // Mock detected items
-      const mockItems: DetectedItem[] = [
-        {
-          name: "Plastic Bottle",
-          confidence: 0.92,
-          category: "plastic",
-          tokenValue: 5,
-        },
-        {
-          name: "Cardboard Box",
-          confidence: 0.87,
-          category: "paper",
-          tokenValue: 3,
-        },
-        {
-          name: "Aluminum Can",
-          confidence: 0.78,
-          category: "metal",
-          tokenValue: 4,
-        },
-      ];
+        // Mock detected items
+        const mockItems: DetectedItem[] = [
+          {
+            name: "Plastic Bottle",
+            confidence: 0.92,
+            category: "plastic",
+            tokenValue: 5,
+          },
+          {
+            name: "Cardboard Box",
+            confidence: 0.87,
+            category: "paper",
+            tokenValue: 3,
+          },
+          {
+            name: "Aluminum Can",
+            confidence: 0.78,
+            category: "metal",
+            tokenValue: 4,
+          },
+        ];
 
-      setDetectedItems(mockItems);
-      setTotalTokens(mockItems.reduce((sum, item) => sum + item.tokenValue, 0));
+        setDetectedItems(mockItems);
+        setTotalTokens(
+          mockItems.reduce((sum, item) => sum + item.tokenValue, 0)
+        );
+      }
     } catch (err) {
+      console.error("Error analyzing image:", err);
       setError("Failed to analyze image. Please try again.");
-      console.error(err);
     } finally {
       setIsAnalyzing(false);
     }
@@ -157,7 +170,7 @@ export default function TrashScanContent() {
         "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
       paper:
         "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
-      metal: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
+      metal: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
       glass: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300",
       organic:
         "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
@@ -175,34 +188,9 @@ export default function TrashScanContent() {
           Scan Trash
         </h1>
         <p className="text-slate-600 dark:text-slate-300">
-          Upload a photo of your trash items to identify and earn tokens
+          Upload a photo of your recyclable items to earn tokens
         </p>
       </div>
-
-      {/* Success Message */}
-      {isSubmitted && (
-        <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-emerald-100 dark:bg-emerald-800 rounded-full">
-              <FaCheck className="text-emerald-600 dark:text-emerald-400" />
-            </div>
-            <div>
-              <h3 className="font-medium text-emerald-800 dark:text-emerald-300">
-                Submission Successful!
-              </h3>
-              <p className="text-sm text-emerald-700 dark:text-emerald-400">
-                You earned {totalTokens} T2C tokens for your recycling effort.
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={resetForm}
-            className="mt-3 w-full py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
-          >
-            Scan More Items
-          </button>
-        </div>
-      )}
 
       {/* Error Message */}
       {error && (
@@ -216,38 +204,88 @@ export default function TrashScanContent() {
         </div>
       )}
 
+      {/* Success Message */}
+      {isSubmitted && (
+        <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-emerald-100 dark:bg-emerald-800 rounded-full">
+              <FaCheck className="text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <div>
+              <p className="text-emerald-700 dark:text-emerald-400 font-medium">
+                Items submitted successfully!
+              </p>
+              <p className="text-emerald-600 dark:text-emerald-500 text-sm mt-1">
+                You earned {totalTokens} T2C tokens for your recycling efforts.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={resetForm}
+            className="mt-4 py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
+          >
+            Scan More Items
+          </button>
+        </div>
+      )}
+
+      {/* AI Mode Toggle */}
+      <div className="mb-4 flex items-center">
+        <span className="text-sm text-slate-600 dark:text-slate-400 mr-2">
+          Analysis Mode:
+        </span>
+        <button
+          onClick={() => setUseAI(true)}
+          className={`px-3 py-1 text-xs rounded-l-md flex items-center gap-1 ${
+            useAI
+              ? "bg-emerald-600 text-white"
+              : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          }`}
+        >
+          <FaRobot className="text-xs" /> AI
+        </button>
+        <button
+          onClick={() => setUseAI(false)}
+          className={`px-3 py-1 text-xs rounded-r-md ${
+            !useAI
+              ? "bg-emerald-600 text-white"
+              : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+          }`}
+        >
+          Simulation
+        </button>
+      </div>
+
       {/* Upload Section */}
       {!isSubmitted && (
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 mb-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+          <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">
+            Upload Photo
+          </h2>
+
           <div className="flex flex-col items-center">
-            {!image ? (
-              <div
-                onClick={triggerFileInput}
-                className="w-full h-64 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors"
-              >
-                <FaCamera className="text-4xl text-slate-400 dark:text-slate-500 mb-3" />
-                <p className="text-slate-600 dark:text-slate-400 mb-1">
-                  Click to upload an image
-                </p>
-                <p className="text-xs text-slate-500 dark:text-slate-500">
-                  JPG, PNG or GIF (max. 5MB)
-                </p>
-              </div>
-            ) : (
-              <div className="relative w-full h-64 mb-4">
+            {image ? (
+              <div className="relative w-full max-w-md h-64 bg-slate-100 dark:bg-slate-700 rounded-lg overflow-hidden">
                 <Image
                   src={image}
                   alt="Uploaded trash"
                   fill
                   style={{ objectFit: "contain" }}
-                  className="rounded-lg"
                 />
                 <button
                   onClick={resetForm}
-                  className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                  className="absolute top-2 right-2 p-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full"
                 >
                   <FaTimes />
                 </button>
+              </div>
+            ) : (
+              <div className="w-full max-w-md h-64 bg-slate-100 dark:bg-slate-700 rounded-lg flex flex-col items-center justify-center">
+                <FaCamera className="text-4xl text-slate-400 dark:text-slate-500 mb-3" />
+                <p className="text-slate-500 dark:text-slate-400 text-center max-w-xs">
+                  Take a clear photo of your recyclable items. Make sure items
+                  are visible and well-lit.
+                </p>
               </div>
             )}
 
@@ -296,7 +334,7 @@ export default function TrashScanContent() {
 
       {/* Results Section */}
       {!isSubmitted && detectedItems.length > 0 && (
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 mt-6">
           <h2 className="text-xl font-semibold mb-4 text-slate-800 dark:text-white">
             Detected Items
           </h2>
