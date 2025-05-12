@@ -1,5 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { supabase } from '@/services/supabase';
+
 
 const handler = NextAuth({
   providers: [
@@ -13,11 +15,34 @@ const handler = NextAuth({
     error: "/",
   },
   callbacks: {
-    async session({ session, token, user }) {
-      return session;
-    },
-    async jwt({ token, user, account, profile }) {
+    async jwt({ token, user, account }) {
+      if (account && user) {
+        // Cek user di Supabase
+        const { data: existingUser } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', user.email)
+          .single();
+  
+        if (!existingUser) {
+          const { data: newUser } = await supabase
+            .from('users')
+            .insert([{ email: user.email, name: user.name, image: user.image }])
+            .select()
+            .single();
+          token.userId = newUser.id;
+        } else {
+          token.userId = existingUser.id;
+        }
+      }
       return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.userId as string;
+        return session;
+      }
+      return session;
     },
     async redirect({ url, baseUrl }) {
       // Redirect to dashboard after sign in

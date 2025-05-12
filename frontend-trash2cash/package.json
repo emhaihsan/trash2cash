@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^2.2.4",
+    "@supabase/supabase-js": "^2.49.4",
     "framer-motion": "^12.10.5",
     "next": "15.3.2",
     "next-auth": "^4.24.11",

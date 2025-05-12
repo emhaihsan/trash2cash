@@ -13,7 +13,6 @@ const Icons = dynamic(() => import("@/components/ui/Icons"), {
 });
 
 // Interface untuk data user di leaderboard
-
 export default function LeaderboardContent() {
   const { data: session } = useSession();
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardUser[]>([]);
