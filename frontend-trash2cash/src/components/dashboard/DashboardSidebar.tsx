@@ -8,6 +8,7 @@ import {
   FaExchangeAlt,
   FaCamera,
   FaUserAlt,
+  FaTrophy,
 } from "react-icons/fa";
 
 interface NavItem {
@@ -39,6 +40,11 @@ export default function DashboardSidebar() {
       label: "Exchange",
       href: "/dashboard/exchange",
       icon: <FaExchangeAlt />,
+    },
+    {
+      label: "Leaderboard",
+      href: "/dashboard/leaderboard",
+      icon: <FaTrophy />,
     },
     {
       label: "Profile",

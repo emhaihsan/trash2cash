@@ -9,7 +9,7 @@ import {
   FaCheck,
   FaTimes,
   FaSpinner,
-  FaRobot,
+  FaInfoCircle,
 } from "react-icons/fa";
 import Image from "next/image";
 import { analyzeTrashImage, DetectedTrashItem } from "@/services/openrouter";
@@ -34,7 +34,6 @@ export default function TrashScanContent() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [totalTokens, setTotalTokens] = useState(0);
-  const [useAI, setUseAI] = useState(true); // Toggle untuk AI vs simulasi
 
   // Redirect if not authenticated
   if (status === "unauthenticated") {
@@ -84,44 +83,12 @@ export default function TrashScanContent() {
     setError(null);
 
     try {
-      if (useAI && process.env.NEXT_PUBLIC_OPENROUTER_API_KEY) {
-        // Gunakan OpenRouter AI untuk analisis
-        const detectedTrashItems = await analyzeTrashImage(image);
-        setDetectedItems(detectedTrashItems);
-        setTotalTokens(
-          detectedTrashItems.reduce((sum, item) => sum + item.tokenValue, 0)
-        );
-      } else {
-        // Simulasi AI analysis dengan timeout
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        // Mock detected items
-        const mockItems: DetectedItem[] = [
-          {
-            name: "Plastic Bottle",
-            confidence: 0.92,
-            category: "plastic",
-            tokenValue: 5,
-          },
-          {
-            name: "Cardboard Box",
-            confidence: 0.87,
-            category: "paper",
-            tokenValue: 3,
-          },
-          {
-            name: "Aluminum Can",
-            confidence: 0.78,
-            category: "metal",
-            tokenValue: 4,
-          },
-        ];
-
-        setDetectedItems(mockItems);
-        setTotalTokens(
-          mockItems.reduce((sum, item) => sum + item.tokenValue, 0)
-        );
-      }
+      // Gunakan OpenRouter AI untuk analisis
+      const detectedTrashItems = await analyzeTrashImage(image);
+      setDetectedItems(detectedTrashItems);
+      setTotalTokens(
+        detectedTrashItems.reduce((sum, item) => sum + item.tokenValue, 0)
+      );
     } catch (err) {
       console.error("Error analyzing image:", err);
       setError("Failed to analyze image. Please try again.");
@@ -229,33 +196,6 @@ export default function TrashScanContent() {
         </div>
       )}
 
-      {/* AI Mode Toggle */}
-      <div className="mb-4 flex items-center">
-        <span className="text-sm text-slate-600 dark:text-slate-400 mr-2">
-          Analysis Mode:
-        </span>
-        <button
-          onClick={() => setUseAI(true)}
-          className={`px-3 py-1 text-xs rounded-l-md flex items-center gap-1 ${
-            useAI
-              ? "bg-emerald-600 text-white"
-              : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
-          }`}
-        >
-          <FaRobot className="text-xs" /> AI
-        </button>
-        <button
-          onClick={() => setUseAI(false)}
-          className={`px-3 py-1 text-xs rounded-r-md ${
-            !useAI
-              ? "bg-emerald-600 text-white"
-              : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
-          }`}
-        >
-          Simulation
-        </button>
-      </div>
-
       {/* Upload Section */}
       {!isSubmitted && (
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6">
@@ -318,12 +258,12 @@ export default function TrashScanContent() {
                 {isAnalyzing ? (
                   <>
                     <FaSpinner className="animate-spin" />
-                    Analyzing...
+                    Analyzing with AI...
                   </>
                 ) : (
                   <>
                     <FaCamera />
-                    Analyze Image
+                    Analyze with AI
                   </>
                 )}
               </button>
@@ -397,6 +337,40 @@ export default function TrashScanContent() {
           </div>
         </div>
       )}
+
+      {/* How It Works Section - Permanent di bagian bawah */}
+      <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg p-6 mt-8">
+        <div className="flex items-center gap-2 mb-4">
+          <FaInfoCircle className="text-emerald-500" />
+          <h3 className="text-lg font-medium text-slate-800 dark:text-white">
+            How Trash2Cash Works
+          </h3>
+        </div>
+
+        <ol className="list-decimal list-inside space-y-2 text-sm text-slate-600 dark:text-slate-300 ml-2">
+          <li>Take a clear photo of recyclable items you want to submit</li>
+          <li>Upload the photo using the form above</li>
+          <li>Our AI will analyze the image and identify recyclable items</li>
+          <li>
+            Each item is categorized and assigned token value based on
+            recyclability
+          </li>
+          <li>Submit the detected items to earn T2C tokens</li>
+          <li>
+            Tokens can be claimed to your wallet or used to mint NFT
+            achievements
+          </li>
+        </ol>
+
+        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <p className="text-sm text-blue-700 dark:text-blue-300">
+            <strong>Future Implementation:</strong> In the future, physical
+            verification at drop-off points will be required to validate your
+            recycling activities. The current implementation is a demonstration
+            of how the system will work.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
