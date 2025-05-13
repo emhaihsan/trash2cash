@@ -1,8 +1,7 @@
 // src/components/Navbar.tsx
 "use client";
 import { useState, useEffect } from "react";
-import { FaLeaf, FaRecycle } from "react-icons/fa";
-import LoginButton from "./auth/LoginButton";
+import { FaRecycle } from "react-icons/fa";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);

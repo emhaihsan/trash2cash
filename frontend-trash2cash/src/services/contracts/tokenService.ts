@@ -93,17 +93,15 @@ export function useMintToken() {
     
     try {
       // Mint tokens langsung ke wallet pengguna
-      const result = await writeContract({
+      await writeContract({
         address: T2C_MANAGER_ADDRESS,
         abi: T2CManagerABI,
         functionName: 'mintTokens',
         args: [userId, walletAddress, parseEther(amount.toString())],
       });
       
-      console.log('Mint transaction sent:', result);
-      // Simpan hash transaksi sebagai mintId sementara
-      // mintId yang sebenarnya akan diupdate di useEffect setelah transaksi berhasil
-      if (result) setMintId(result);
+      console.log('Mint transaction sent');
+      // Hash transaksi akan tersedia di useEffect melalui data: hash
     } catch (err) {
       console.error('Error minting tokens:', err);
       setIsMinting(false); // Reset flag jika terjadi error

@@ -110,21 +110,22 @@ export default function TokensContent() {
           // Set flag to prevent duplicate entries
           hasRecordedTx.current = true;
 
-          // Data yang akan disimpan ke Supabase
-          const tokenClaimData = {
+          console.log("Recording transaction details:", {
             user_id: session.user.id,
             wallet_address: walletAddress,
             amount: parseFloat(claimAmount),
             status: "completed",
             tx_hash: txHash,
-          };
-
-          console.log("Recording transaction details:", tokenClaimData);
+          });
 
           // Create a new mint record in the database with completed status
-          const { error } = await supabase
-            .from("token_claims")
-            .insert(tokenClaimData);
+          const { error } = await supabase.from("token_claims").insert({
+            user_id: session.user.id,
+            wallet_address: walletAddress,
+            amount: parseFloat(claimAmount),
+            status: "completed",
+            tx_hash: txHash,
+          });
 
           if (error) {
             console.error("Error recording mint:", error);
@@ -134,13 +135,16 @@ export default function TokensContent() {
 
             // Refresh token data
             try {
-              const stats = await getUserTokenStats(session.user.id);
-              console.log("Updated token stats:", stats);
-              setTokenStats(stats);
+              // Pastikan session.user.id ada sebelum memanggil fungsi
+              if (session?.user?.id) {
+                const stats = await getUserTokenStats(session.user.id);
+                console.log("Updated token stats:", stats);
+                setTokenStats(stats);
 
-              const history = await getTokenClaimHistory(session.user.id);
-              console.log("Updated claim history:", history);
-              setWalletClaims(history);
+                const history = await getTokenClaimHistory(session.user.id);
+                console.log("Updated claim history:", history);
+                setWalletClaims(history);
+              }
 
               // Show success message
               setSuccessMessage(
@@ -390,27 +394,6 @@ export default function TokensContent() {
           </div>
         </div>
       )}
-
-      {/* Blockchain Process Explanation */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 px-4 py-3 rounded-lg mb-6">
-        <h3 className="font-medium mb-2 flex items-center">
-          <FaEthereum className="mr-2" /> Proses Minting Token
-        </h3>
-        <p className="text-sm mb-2">
-          Saat Anda mengklaim token, proses berikut akan terjadi:
-        </p>
-        <ol className="text-sm list-decimal ml-5 space-y-1">
-          <li>
-            Anda akan diminta untuk mengkonfirmasi transaksi di wallet Anda
-          </li>
-          <li>
-            Smart contract T2CManager akan minting token langsung ke wallet Anda
-          </li>
-          <li>Transaksi akan diproses di blockchain Sepolia</li>
-          <li>Setelah konfirmasi, token akan tersedia di wallet Anda</li>
-          <li>Riwayat minting akan diperbarui dengan hash transaksi</li>
-        </ol>
-      </div>
 
       {/* Claim History */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow overflow-hidden">

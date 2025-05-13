@@ -12,7 +12,7 @@ export default function LoginButton({
   className = "",
   variant = "primary",
 }: LoginButtonProps) {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleAuth = async () => {

@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     const filePath = fileName;
 
     // Upload file ke Supabase Storage
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from('avatars')
       .upload(filePath, compressedImageBuffer, {
         contentType: 'image/jpeg',
