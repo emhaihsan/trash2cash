@@ -362,3 +362,68 @@ export async function updateUserRecyclingStats(
     throw error;
   }
 }
+
+// Fungsi untuk mendapatkan data leaderboard
+export async function getLeaderboardData(timeframe: 'weekly' | 'monthly' | 'alltime' = 'weekly', limit: number = 10) {
+  try {
+    let query = supabase
+      .from('users')
+      .select('id, name, image, items_recycled, total_tokens, submissions');
+
+    // Filter berdasarkan timeframe jika diperlukan
+    // Dalam implementasi nyata, Anda mungkin perlu tabel terpisah untuk statistik berdasarkan waktu
+    // atau menggunakan activities dengan filter tanggal
+    
+    // Untuk demo, kita gunakan data dari tabel users tanpa filter waktu
+    
+    // Urutkan berdasarkan total token (bisa disesuaikan dengan kriteria lain)
+    query = query.order('total_tokens', { ascending: false }).limit(limit);
+    
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Supabase fetch error:', error);
+      throw error;
+    }
+
+    // Transform data to match LeaderboardUser interface and add rank
+    const leaderboardData = data.map((user, index) => ({
+      id: user.id,
+      name: user.name || 'Anonymous User',
+      image: user.image,
+      totalItems: user.items_recycled || 0,
+      totalTokens: user.total_tokens || 0,
+      totalSubmissions: user.submissions || 0,
+      rank: index + 1
+    }));
+    
+    return leaderboardData;
+  } catch (error) {
+    console.error('Error fetching leaderboard data:', error);
+    return [];
+  }
+}
+
+// Fungsi untuk mendapatkan peringkat user tertentu
+export async function getUserRank(userId: string, timeframe: 'weekly' | 'monthly' | 'alltime' = 'weekly') {
+  try {
+    // Dapatkan semua user yang diurutkan berdasarkan token
+    const { data, error } = await supabase
+      .from('users')
+      .select('id, total_tokens')
+      .order('total_tokens', { ascending: false });
+
+    if (error) {
+      console.error('Supabase fetch error:', error);
+      throw error;
+    }
+
+    // Cari peringkat user
+    const userIndex = data.findIndex(user => user.id === userId);
+    
+    return userIndex !== -1 ? userIndex + 1 : null;
+  } catch (error) {
+    console.error('Error fetching user rank:', error);
+    return null;
+  }
+}

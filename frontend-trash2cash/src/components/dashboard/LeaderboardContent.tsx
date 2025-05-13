@@ -5,6 +5,11 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { LeaderboardUser } from "../dummies";
+import {
+  getLeaderboardData,
+  getUserRank,
+  getUserData,
+} from "@/services/supabase";
 
 // Lazy load Icons component
 const Icons = dynamic(() => import("@/components/ui/Icons"), {
@@ -26,110 +31,37 @@ export default function LeaderboardContent() {
     const fetchLeaderboardData = async () => {
       setIsLoading(true);
       try {
-        // Simulasi fetch data dari API
-        // Dalam implementasi nyata, ini akan memanggil API backend
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // Fetch real leaderboard data from Supabase
+        const data = await getLeaderboardData(timeframe);
 
-        // Data dummy untuk simulasi
-        const dummyData: LeaderboardUser[] = [
-          {
-            id: "1",
-            name: "Eco Warrior",
-            image: "https://i.pravatar.cc/150?img=1",
-            totalItems: 87,
-            totalTokens: 342,
-            totalSubmissions: 24,
-            rank: 1,
-          },
-          {
-            id: "2",
-            name: "Green Guardian",
-            image: "https://i.pravatar.cc/150?img=2",
-            totalItems: 76,
-            totalTokens: 298,
-            totalSubmissions: 19,
-            rank: 2,
-          },
-          {
-            id: "3",
-            name: "Recycle Hero",
-            image: "https://i.pravatar.cc/150?img=3",
-            totalItems: 65,
-            totalTokens: 247,
-            totalSubmissions: 18,
-            rank: 3,
-          },
-          {
-            id: "4",
-            name: "Earth Defender",
-            image: "https://i.pravatar.cc/150?img=4",
-            totalItems: 58,
-            totalTokens: 210,
-            totalSubmissions: 15,
-            rank: 4,
-          },
-          {
-            id: "5",
-            name: "Trash Transformer",
-            image: "https://i.pravatar.cc/150?img=5",
-            totalItems: 52,
-            totalTokens: 187,
-            totalSubmissions: 14,
-            rank: 5,
-          },
-          // Tambahkan current user jika ada session
-          ...(session?.user
-            ? [
-                {
-                  id: "current",
-                  name: session.user.name || "You",
-                  image: session.user.image || null,
-                  totalItems: 42,
-                  totalTokens: 156,
-                  totalSubmissions: 12,
-                  rank: 8,
-                },
-              ]
-            : []),
-          {
-            id: "6",
-            name: "Eco Innovator",
-            image: "https://i.pravatar.cc/150?img=6",
-            totalItems: 48,
-            totalTokens: 172,
-            totalSubmissions: 13,
-            rank: 6,
-          },
-          {
-            id: "7",
-            name: "Planet Protector",
-            image: "https://i.pravatar.cc/150?img=7",
-            totalItems: 45,
-            totalTokens: 163,
-            totalSubmissions: 12,
-            rank: 7,
-          },
-          {
-            id: "9",
-            name: "Waste Warrior",
-            image: "https://i.pravatar.cc/150?img=9",
-            totalItems: 38,
-            totalTokens: 142,
-            totalSubmissions: 11,
-            rank: 9,
-          },
-          {
-            id: "10",
-            name: "Sustainability Star",
-            image: "https://i.pravatar.cc/150?img=10",
-            totalItems: 35,
-            totalTokens: 128,
-            totalSubmissions: 10,
-            rank: 10,
-          },
-        ];
+        // If user is logged in, check if they're in the top 10
+        if (session?.user?.id) {
+          const userRank = await getUserRank(session.user.id, timeframe);
+          const userData = await getUserData(session.user.id);
 
-        setLeaderboardData(dummyData);
+          // Check if user is already in the leaderboard
+          const userInLeaderboard = data.some(
+            (user) => user.id === session.user.id
+          );
+
+          // If user is not in top 10 but we have their rank, add them to the list
+          if (!userInLeaderboard && userRank && userData) {
+            const currentUser: LeaderboardUser = {
+              id: userData.id,
+              name: userData.name || session.user.name || "You",
+              image: userData.image || session.user.image || null,
+              totalItems: userData.items_recycled || 0,
+              totalTokens: userData.total_tokens || 0,
+              totalSubmissions: userData.submissions || 0,
+              rank: userRank,
+            };
+
+            // Add current user to the list
+            data.push(currentUser);
+          }
+        }
+
+        setLeaderboardData(data);
       } catch (error) {
         console.error("Error fetching leaderboard data:", error);
       } finally {
@@ -170,7 +102,7 @@ export default function LeaderboardContent() {
 
   // Fungsi untuk menentukan apakah user adalah current user
   const isCurrentUser = (user: LeaderboardUser) => {
-    return session?.user && user.id === "current";
+    return session?.user && user.id === session.user.id;
   };
 
   return (
