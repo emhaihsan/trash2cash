@@ -4,6 +4,8 @@ import { getToken } from "next-auth/jwt";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
+  console.log("Middleware path:", pathname, "URL:", request.url);
+  
   // Check if the path starts with /dashboard
   const isDashboardPath = pathname.startsWith("/dashboard");
   
@@ -12,13 +14,13 @@ export async function middleware(request: NextRequest) {
     req: request, 
     secret: process.env.NEXTAUTH_SECRET 
   });
+  
+  console.log("Token exists:", !!token);
 
   // If the user is not authenticated and trying to access dashboard
   if (isDashboardPath && !token) {
-    // Redirect to the login page with a return URL
-    const url = new URL("/", request.url);
-    url.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(url);
+    // Redirect to the login page without callbackUrl to avoid issues in production
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   // If the user is authenticated and trying to access the login page

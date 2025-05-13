@@ -57,16 +57,19 @@ const handler = NextAuth({
       return session;
     },
     async redirect({ url, baseUrl }) {
+      console.log("Redirect URL:", url, "Base URL:", baseUrl); // Tambahkan logging
       // Redirect to dashboard after sign in
-      if (url.startsWith(baseUrl)) {
+      if (url.startsWith("/")) {
+        return `${baseUrl}/dashboard`;
+      } else if (url.startsWith(baseUrl)) {
         return `${baseUrl}/dashboard`;
       }
       // If it's an absolute URL, allow it
       else if (url.startsWith("http")) {
         return url;
       }
-      return baseUrl;
-    },
+      return `${baseUrl}/dashboard`;
+    }
   },
 });
 
