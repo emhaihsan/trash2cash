@@ -1,5 +1,6 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 const Icons = dynamic(() => import("@/components/ui/Icons"), {
   ssr: false,
@@ -81,9 +82,11 @@ export default function CustomWalletButton() {
                         }}
                       >
                         {chain.iconUrl && (
-                          <img
+                          <Image
                             alt={chain.name ?? "Chain icon"}
                             src={chain.iconUrl}
+                            width={16}
+                            height={16}
                             style={{ width: 16, height: 16 }}
                           />
                         )}

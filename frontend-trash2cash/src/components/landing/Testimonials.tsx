@@ -15,17 +15,7 @@ export default function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-
-    // Auto-rotate testimonials every 5 seconds
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
+  // Pindahkan deklarasi testimonials ke sini, sebelum useEffect
   const testimonials: TestimonialProps[] = [
     {
       quote:
@@ -60,6 +50,17 @@ export default function Testimonials() {
         "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&h=150&q=80",
     },
   ];
+
+  useEffect(() => {
+    setMounted(true);
+
+    // Auto-rotate testimonials every 5 seconds
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [testimonials.length]);
 
   const nextTestimonial = () => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);

@@ -3,6 +3,7 @@
 import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ProfileSkeleton } from "../ui/SkeletonLoader";
 import CustomWalletButton from "../ui/CustomWalletButton";
 import dynamic from "next/dynamic";
@@ -72,10 +73,12 @@ export default function DashboardNavbar() {
               onClick={() => setIsProfileOpen(!isProfileOpen)}
             >
               {userData.image ? (
-                <img
+                <Image
                   src={userData.image + `?v=${new Date().getTime()}`}
                   alt={userData.name || "User"}
-                  className="w-8 h-8 rounded-full"
+                  width={32}
+                  height={32}
+                  className="rounded-full"
                 />
               ) : (
                 <Icons name="FaUserCircle" className="w-8 h-8 text-slate-400" />
