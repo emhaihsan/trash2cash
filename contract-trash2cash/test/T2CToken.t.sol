@@ -1,68 +1,84 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {Test, console} from "forge-std/Test.sol";
+import {Test, console2} from "forge-std/Test.sol";
 import {T2CToken} from "../src/T2CToken.sol";
 
 contract T2CTokenTest is Test {
     T2CToken public token;
     address public owner;
-    address public user;
+    address public user1;
+    address public user2;
 
     function setUp() public {
         owner = address(this);
-        user = address(0x1);
+        user1 = makeAddr("user1");
+        user2 = makeAddr("user2");
+
+        // Deploy token dengan owner adalah address(this)
         token = new T2CToken(owner);
+
+        // Berikan ETH ke user untuk testing
+        vm.deal(user1, 10 ether);
+        vm.deal(user2, 10 ether);
     }
 
-    function testMetadata() public {
+    function test_Deployment() public {
         assertEq(token.name(), "Trash2Cash Token");
         assertEq(token.symbol(), "T2C");
         assertEq(token.decimals(), 18);
+        assertEq(token.totalSupply(), 0);
+        assertEq(token.owner(), owner);
     }
 
-    function testMint() public {
+    function test_Mint() public {
         uint256 amount = 100 * 10 ** 18; // 100 tokens
-        token.mint(user, amount);
-        assertEq(token.balanceOf(user), amount);
+
+        // Mint token ke user1
+        token.mint(user1, amount);
+
+        // Cek saldo user1
+        assertEq(token.balanceOf(user1), amount);
         assertEq(token.totalSupply(), amount);
     }
 
-    function testMintOnlyOwner() public {
+    function test_MintOnlyOwner() public {
         uint256 amount = 100 * 10 ** 18; // 100 tokens
-        vm.prank(user);
-        vm.expectRevert();
-        token.mint(user, amount);
+
+        // Coba mint dari user1 (bukan owner)
+        vm.prank(user1);
+        vm.expectRevert(); // Harusnya revert karena bukan owner
+        token.mint(user2, amount);
     }
 
-    function testBurn() public {
-        uint256 mintAmount = 100 * 10 ** 18; // 100 tokens
-        uint256 burnAmount = 30 * 10 ** 18; // 30 tokens
+    function test_Burn() public {
+        uint256 amount = 100 * 10 ** 18; // 100 tokens
 
-        // Mint tokens to user
-        token.mint(user, mintAmount);
+        // Mint token ke user1
+        token.mint(user1, amount);
 
-        // Burn tokens as user
-        vm.prank(user);
-        token.burn(burnAmount);
+        // Burn token dari user1
+        vm.prank(user1);
+        token.burn(amount / 2);
 
-        assertEq(token.balanceOf(user), mintAmount - burnAmount);
-        assertEq(token.totalSupply(), mintAmount - burnAmount);
+        // Cek saldo user1
+        assertEq(token.balanceOf(user1), amount / 2);
+        assertEq(token.totalSupply(), amount / 2);
     }
 
-    function testTransfer() public {
-        address recipient = address(0x2);
-        uint256 mintAmount = 100 * 10 ** 18; // 100 tokens
-        uint256 transferAmount = 50 * 10 ** 18; // 50 tokens
+    function test_Transfer() public {
+        uint256 amount = 100 * 10 ** 18; // 100 tokens
 
-        // Mint tokens to user
-        token.mint(user, mintAmount);
+        // Mint token ke user1
+        token.mint(user1, amount);
 
-        // Transfer tokens from user to recipient
-        vm.prank(user);
-        token.transfer(recipient, transferAmount);
+        // Transfer token dari user1 ke user2
+        vm.prank(user1);
+        token.transfer(user2, amount / 2);
 
-        assertEq(token.balanceOf(user), mintAmount - transferAmount);
-        assertEq(token.balanceOf(recipient), transferAmount);
+        // Cek saldo user1 dan user2
+        assertEq(token.balanceOf(user1), amount / 2);
+        assertEq(token.balanceOf(user2), amount / 2);
+        assertEq(token.totalSupply(), amount);
     }
 }
