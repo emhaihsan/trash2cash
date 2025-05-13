@@ -18,11 +18,43 @@ export default function LoginButton({
   const handleAuth = async () => {
     if (session) {
       setIsLoading(true);
-      await signOut({ callbackUrl: "/" });
-      setIsLoading(false);
+
+      // Create and append an iframe to clear Google's session cookies
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = "https://accounts.google.com/logout";
+      document.body.appendChild(iframe);
+
+      // Wait a bit for the iframe to load
+      setTimeout(() => {
+        // Remove the iframe
+        if (iframe.parentNode) {
+          iframe.parentNode.removeChild(iframe);
+        }
+
+        // Clear local storage and session storage
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // Clear cookies related to authentication
+        document.cookie.split(";").forEach((cookie) => {
+          const [name] = cookie.trim().split("=");
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        });
+
+        // Finally sign out from NextAuth
+        signOut({
+          callbackUrl: "/",
+          redirect: true,
+        });
+      }, 1000);
     } else {
       setIsLoading(true);
-      await signIn("google", { callbackUrl: "/" });
+      // For sign in, add the prompt parameter to force account selection
+      await signIn("google", {
+        callbackUrl: "/",
+        prompt: "select_account",
+      });
       setIsLoading(false);
     }
   };

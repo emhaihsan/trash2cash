@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 import { DetectedItem } from "@/components/dummies";
+import { updateUserRecyclingStats } from "@/services/supabase";
 
 // Lazy import react-icons untuk mengurangi initial load
 import dynamic from "next/dynamic";
@@ -87,13 +88,23 @@ export default function TrashScanContent() {
 
       // Gunakan OpenRouter AI untuk analisis
       const detectedTrashItems = await analyzeTrashImage(image);
+
+      if (detectedTrashItems.length === 0) {
+        setError(
+          "No recyclable items detected in the image. Please try with a clearer image or different items."
+        );
+        return;
+      }
+
       setDetectedItems(detectedTrashItems);
       setTotalTokens(
         detectedTrashItems.reduce((sum, item) => sum + item.tokenValue, 0)
       );
     } catch (err) {
       console.error("Error analyzing image:", err);
-      setError("Failed to analyze image. Please try again.");
+      setError(
+        "Failed to analyze image. Please check your internet connection and try again."
+      );
     } finally {
       setIsAnalyzing(false);
     }
@@ -106,14 +117,25 @@ export default function TrashScanContent() {
     setError(null);
 
     try {
-      // Simulate API call with a timeout
-      // In a real app, you would call your backend API here
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      if (!session?.user?.id) {
+        throw new Error("User not authenticated");
+      }
+
+      // Update user stats in database with the detected items
+      const result = await updateUserRecyclingStats(
+        session.user.id,
+        detectedItems
+      );
 
       setIsSubmitted(true);
+
+      // Show success message and redirect to dashboard
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 3000);
     } catch (err) {
+      console.error("Error submitting items:", err);
       setError("Failed to submit items. Please try again.");
-      console.error(err);
     } finally {
       setIsUploading(false);
     }
@@ -176,31 +198,26 @@ export default function TrashScanContent() {
         </div>
       )}
 
-      {/* Success Message */}
+      {/* Success message after submission */}
       {isSubmitted && (
-        <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-emerald-100 dark:bg-emerald-800 rounded-full">
+        <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-6 mb-6">
+          <div className="flex flex-col items-center text-center">
+            <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-800 rounded-full flex items-center justify-center mb-4">
               <Icons
                 name="FaCheck"
-                className="text-emerald-600 dark:text-emerald-400"
+                className="text-emerald-600 dark:text-emerald-400 text-2xl"
               />
             </div>
-            <div>
-              <p className="text-emerald-700 dark:text-emerald-400 font-medium">
-                Items submitted successfully!
-              </p>
-              <p className="text-emerald-600 dark:text-emerald-500 text-sm mt-1">
-                You earned {totalTokens} T2C tokens for your recycling efforts.
-              </p>
-            </div>
+            <h3 className="text-xl font-semibold text-emerald-800 dark:text-emerald-300 mb-2">
+              Submission Successful!
+            </h3>
+            <p className="text-emerald-700 dark:text-emerald-400 mb-4">
+              You've earned {totalTokens} T2C tokens for your recycling effort.
+            </p>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Redirecting to dashboard...
+            </p>
           </div>
-          <button
-            onClick={resetForm}
-            className="mt-4 py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
-          >
-            Scan More Items
-          </button>
         </div>
       )}
 
@@ -279,6 +296,22 @@ export default function TrashScanContent() {
                 )}
               </button>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Loading indicator during analysis */}
+      {isAnalyzing && (
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 mb-6">
+          <div className="flex flex-col items-center py-8">
+            <div className="animate-spin h-12 w-12 border-4 border-emerald-200 border-t-emerald-500 rounded-full mb-4"></div>
+            <h3 className="text-lg font-medium text-slate-800 dark:text-white mb-2">
+              Analyzing Image...
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 text-center max-w-md">
+              Our AI is identifying recyclable items in your image. This may
+              take a few moments.
+            </p>
           </div>
         </div>
       )}
