@@ -1,0 +1,3 @@
+[submodule "contract-trash2cash/lib/openzeppelin-contracts"]
+	path = contract-trash2cash/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
