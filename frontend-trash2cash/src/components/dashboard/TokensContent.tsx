@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
@@ -11,8 +11,14 @@ import {
   FaCheck,
   FaTimes,
 } from "react-icons/fa";
+import {
+  getUserTokenStats,
+  getTokenClaimHistory,
+  claimTokensToWallet,
+} from "@/services/supabase";
 
 interface WalletClaim {
+  id?: string;
   address: string;
   amount: number;
   date: string;
@@ -30,30 +36,41 @@ export default function TokensContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Mock data
-  const tokenStats = {
-    totalEarned: 230,
-    availableToClaim: 180,
-    claimed: 50,
-  };
+  // State for real data
+  const [tokenStats, setTokenStats] = useState({
+    totalEarned: 0,
+    availableToClaim: 0,
+    claimed: 0,
+  });
+  const [walletClaims, setWalletClaims] = useState<WalletClaim[]>([]);
 
-  const walletClaims: WalletClaim[] = [
-    {
-      address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
-      amount: 30,
-      date: "May 10, 2025",
-      status: "completed",
-      txHash: "0x3a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b",
-    },
-    {
-      address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
-      amount: 20,
-      date: "Apr 28, 2025",
-      status: "completed",
-      txHash: "0x9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b",
-    },
-  ];
+  // Fetch token data when component mounts
+  useEffect(() => {
+    const fetchTokenData = async () => {
+      if (!session?.user?.id) return;
+
+      setIsLoading(true);
+      try {
+        // Fetch token stats
+        const stats = await getUserTokenStats(session.user.id);
+        setTokenStats(stats);
+
+        // Fetch claim history
+        const history = await getTokenClaimHistory(session.user.id);
+        setWalletClaims(history);
+      } catch (error) {
+        console.error("Error fetching token data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (session?.user?.id) {
+      fetchTokenData();
+    }
+  }, [session]);
 
   // Redirect if not authenticated
   if (status === "unauthenticated") {
@@ -61,7 +78,7 @@ export default function TokensContent() {
     return null;
   }
 
-  if (status === "loading") {
+  if (status === "loading" || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
@@ -97,9 +114,12 @@ export default function TokensContent() {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call with a timeout
-      // In a real app, you would call your backend API here
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      if (!session?.user?.id) {
+        throw new Error("User not authenticated");
+      }
+
+      // Call the real claim function
+      await claimTokensToWallet(session.user.id, walletAddress, amount);
 
       setSuccessMessage(
         `Successfully submitted claim for ${amount} T2C tokens to ${walletAddress}`
@@ -108,11 +128,18 @@ export default function TokensContent() {
       setWalletAddress("");
       setClaimAmount("");
 
-      // Update token stats (this would come from the API in a real app)
-      // tokenStats.availableToClaim -= amount;
-      // tokenStats.claimed += amount;
+      // Refresh token data after successful claim
+      const stats = await getUserTokenStats(session.user.id);
+      setTokenStats(stats);
+
+      const history = await getTokenClaimHistory(session.user.id);
+      setWalletClaims(history);
     } catch (err) {
-      setError("Failed to submit claim. Please try again.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to submit claim. Please try again."
+      );
       console.error(err);
     } finally {
       setIsSubmitting(false);

@@ -427,3 +427,164 @@ export async function getUserRank(userId: string, timeframe: 'weekly' | 'monthly
     return null;
   }
 }
+
+// Fungsi untuk mendapatkan statistik token user
+export async function getUserTokenStats(userId: string) {
+  try {
+    // Dapatkan total token yang diperoleh dari tabel users
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('total_tokens')
+      .eq('id', userId)
+      .single();
+
+    if (userError) {
+      console.error('Supabase fetch error:', userError);
+      throw userError;
+    }
+
+    // Dapatkan total token yang sudah diklaim dari tabel token_claims
+    const { data: claimsData, error: claimsError } = await supabase
+      .from('token_claims')
+      .select('amount')
+      .eq('user_id', userId)
+      .eq('status', 'completed');
+
+    if (claimsError) {
+      console.error('Supabase fetch error:', claimsError);
+      throw claimsError;
+    }
+
+    // Hitung total token yang sudah diklaim
+    const totalClaimed = claimsData.reduce((sum, claim) => sum + claim.amount, 0);
+
+    // Hitung token yang tersedia untuk diklaim
+    const totalEarned = userData.total_tokens || 0;
+    const availableToClaim = Math.max(0, totalEarned - totalClaimed);
+
+    return {
+      totalEarned,
+      availableToClaim,
+      claimed: totalClaimed
+    };
+  } catch (error) {
+    console.error('Error fetching token stats:', error);
+    // Return default values if there's an error
+    return {
+      totalEarned: 0,
+      availableToClaim: 0,
+      claimed: 0
+    };
+  }
+}
+
+// Interface untuk data klaim token
+export interface TokenClaim {
+  id: string;
+  user_id: string;
+  wallet_address: string;
+  amount: number;
+  status: 'pending' | 'completed' | 'failed';
+  tx_hash?: string;
+  created_at: string;
+}
+
+// Fungsi untuk mendapatkan riwayat klaim token
+export async function getTokenClaimHistory(userId: string) {
+  try {
+    const { data, error } = await supabase
+      .from('token_claims')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Supabase fetch error:', error);
+      throw error;
+    }
+
+    // Transform data to match the WalletClaim interface
+    return data.map(claim => ({
+      id: claim.id,
+      address: claim.wallet_address,
+      amount: claim.amount,
+      date: new Date(claim.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      }),
+      status: claim.status,
+      txHash: claim.tx_hash
+    }));
+  } catch (error) {
+    console.error('Error fetching claim history:', error);
+    return [];
+  }
+}
+
+// Fungsi untuk mengklaim token ke wallet
+export async function claimTokensToWallet(
+  userId: string,
+  walletAddress: string,
+  amount: number
+) {
+  try {
+    // 1. Periksa apakah user memiliki cukup token untuk diklaim
+    const tokenStats = await getUserTokenStats(userId);
+    
+    if (amount > tokenStats.availableToClaim) {
+      throw new Error(`Insufficient tokens. Available: ${tokenStats.availableToClaim}`);
+    }
+
+    // 2. Buat record klaim baru
+    const { data, error } = await supabase
+      .from('token_claims')
+      .insert([
+        {
+          user_id: userId,
+          wallet_address: walletAddress,
+          amount: amount,
+          status: 'pending'
+        }
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Supabase insert error:', error);
+      throw error;
+    }
+
+    // 3. Dalam implementasi nyata, di sini Anda akan memanggil smart contract
+    // untuk mentransfer token ke wallet pengguna
+    // Untuk demo, kita simulasikan dengan timeout dan update status
+
+    // Simulasi proses blockchain (dalam implementasi nyata, ini akan menjadi async)
+    setTimeout(async () => {
+      // Generate fake transaction hash
+      const txHash = '0x' + Array(64).fill(0).map(() => 
+        Math.floor(Math.random() * 16).toString(16)).join('');
+      
+      // Update status klaim menjadi completed
+      const { error: updateError } = await supabase
+        .from('token_claims')
+        .update({ 
+          status: 'completed',
+          tx_hash: txHash
+        })
+        .eq('id', data.id);
+      
+      if (updateError) {
+        console.error('Error updating claim status:', updateError);
+      }
+    }, 5000); // Simulasi delay 5 detik
+
+    return {
+      success: true,
+      claimId: data.id
+    };
+  } catch (error) {
+    console.error('Error claiming tokens:', error);
+    throw error;
+  }
+}
