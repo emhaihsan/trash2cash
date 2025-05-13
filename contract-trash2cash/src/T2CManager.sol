@@ -12,8 +12,8 @@ contract T2CManager is Ownable {
     // Reference to the T2CToken contract
     T2CToken public t2cToken;
 
-    // Struct to store claim information
-    struct Claim {
+    // Struct to store mint information
+    struct MintRecord {
         string userId;
         address walletAddress;
         uint256 amount;
@@ -21,18 +21,19 @@ contract T2CManager is Ownable {
         bytes32 txHash;
     }
 
-    // Mapping from claim ID to Claim data
-    mapping(bytes32 => Claim) public claims;
+    // Mapping from mint ID to MintRecord data
+    mapping(bytes32 => MintRecord) public mintRecords;
 
-    // Mapping from user ID to their claims
-    mapping(string => bytes32[]) public userClaims;
+    // Mapping from user ID to their mint records
+    mapping(string => bytes32[]) public userMintRecords;
 
     // Mapping from wallet address to user ID
     mapping(address => string) public walletToUser;
 
     // Events
-    event ClaimCreated(bytes32 indexed claimId, string indexed userId, address walletAddress, uint256 amount);
-    event ClaimProcessed(bytes32 indexed claimId, bytes32 txHash);
+    event TokensMinted(
+        bytes32 indexed mintId, string indexed userId, address walletAddress, uint256 amount, bytes32 txHash
+    );
 
     /**
      * @dev Constructor that sets the token contract address
@@ -44,87 +45,70 @@ contract T2CManager is Ownable {
     }
 
     /**
-     * @dev Creates a new claim for tokens
-     * @param userId The ID of the user making the claim
+     * @dev Mints tokens directly to the user's wallet and records the transaction
+     * @param userId The ID of the user
      * @param walletAddress The wallet address to receive tokens
      * @param amount The amount of tokens to mint
-     * @return claimId The ID of the created claim
+     * @return mintId The ID of the mint record
      */
-    function createClaim(string calldata userId, address walletAddress, uint256 amount)
+    function mintTokens(string calldata userId, address walletAddress, uint256 amount)
         external
-        returns (bytes32 claimId)
+        returns (bytes32 mintId)
     {
-        // Generate a unique claim ID
-        claimId = keccak256(abi.encodePacked(userId, walletAddress, amount, block.timestamp, msg.sender));
+        // Generate a unique mint ID
+        mintId = keccak256(abi.encodePacked(userId, walletAddress, amount, block.timestamp, msg.sender));
 
-        // Store the claim data
-        claims[claimId] = Claim({
+        // Mint tokens directly to the user's wallet
+        t2cToken.mint(walletAddress, amount);
+
+        // Store the mint record
+        mintRecords[mintId] = MintRecord({
             userId: userId,
             walletAddress: walletAddress,
             amount: amount,
             timestamp: block.timestamp,
-            txHash: bytes32(0)
+            txHash: blockhash(block.number - 1)
         });
 
-        // Add the claim to the user's claims
-        userClaims[userId].push(claimId);
+        // Add the mint record to the user's records
+        userMintRecords[userId].push(mintId);
 
-        // Map the wallet address to the user ID
+        // Map the wallet address to the user ID if not already mapped
         if (bytes(walletToUser[walletAddress]).length == 0) {
             walletToUser[walletAddress] = userId;
         }
 
-        emit ClaimCreated(claimId, userId, walletAddress, amount);
-        return claimId;
+        // Emit event with all information
+        emit TokensMinted(mintId, userId, walletAddress, amount, mintRecords[mintId].txHash);
+
+        return mintId;
     }
 
     /**
-     * @dev Processes a claim by minting tokens to the user's wallet
-     * @param claimId The ID of the claim to process
-     * @return success Whether the claim was processed successfully
-     */
-    function processClaim(bytes32 claimId) external returns (bool success) {
-        Claim storage claim = claims[claimId];
-
-        // Ensure claim exists and hasn't been processed
-        require(claim.timestamp > 0, "Claim does not exist");
-        require(claim.txHash == bytes32(0), "Claim already processed");
-
-        // Mint tokens to the user's wallet
-        t2cToken.mint(claim.walletAddress, claim.amount);
-
-        // Record the transaction hash
-        claim.txHash = blockhash(block.number - 1);
-
-        emit ClaimProcessed(claimId, claim.txHash);
-        return true;
-    }
-
-    /**
-     * @dev Gets all claims for a user
+     * @dev Gets all mint records for a user
      * @param userId The ID of the user
-     * @return claimIds Array of claim IDs for the user
+     * @return mintIds Array of mint record IDs for the user
      */
-    function getUserClaims(string calldata userId) external view returns (bytes32[] memory) {
-        return userClaims[userId];
+    function getUserMintRecords(string calldata userId) external view returns (bytes32[] memory) {
+        return userMintRecords[userId];
     }
 
     /**
-     * @dev Gets claim details
-     * @param claimId The ID of the claim
+     * @dev Gets mint record details
+     * @param mintId The ID of the mint record
      * @return userId The ID of the user
      * @return walletAddress The wallet address
      * @return amount The amount of tokens
-     * @return timestamp The timestamp when the claim was created
-     * @return txHash The transaction hash (if processed)
+     * @return timestamp The timestamp when the tokens were minted
+     * @return txHash The transaction hash
      */
-    function getClaimDetails(bytes32 claimId)
+    function getMintRecordDetails(bytes32 mintId)
         external
         view
         returns (string memory userId, address walletAddress, uint256 amount, uint256 timestamp, bytes32 txHash)
     {
-        Claim memory claim = claims[claimId];
-        return (claim.userId, claim.walletAddress, claim.amount, claim.timestamp, claim.txHash);
+        MintRecord memory record = mintRecords[mintId];
+        return (record.userId, record.walletAddress, record.amount, record.timestamp, record.txHash);
     }
 
     /**

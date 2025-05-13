@@ -528,63 +528,64 @@ export async function claimTokensToWallet(
   walletAddress: string,
   amount: number
 ) {
-  try {
-    // 1. Periksa apakah user memiliki cukup token untuk diklaim
-    const tokenStats = await getUserTokenStats(userId);
-    
-    if (amount > tokenStats.availableToClaim) {
-      throw new Error(`Insufficient tokens. Available: ${tokenStats.availableToClaim}`);
-    }
+  // Validasi input
+  if (!walletAddress.match(/^0x[a-fA-F0-9]{40}$/)) {
+    throw new Error("Invalid Ethereum wallet address");
+  }
 
-    // 2. Buat record klaim baru
+  if (amount <= 0) {
+    throw new Error("Amount must be greater than 0");
+  }
+
+  try {
+    // Buat klaim baru di database
     const { data, error } = await supabase
-      .from('token_claims')
-      .insert([
-        {
-          user_id: userId,
-          wallet_address: walletAddress,
-          amount: amount,
-          status: 'pending'
-        }
-      ])
+      .from("token_claims")
+      .insert({
+        user_id: userId,
+        wallet_address: walletAddress,
+        amount: amount,
+        status: "pending",
+      })
       .select()
       .single();
 
     if (error) {
-      console.error('Supabase insert error:', error);
-      throw error;
+      console.error("Error creating token claim:", error);
+      throw new Error("Failed to create token claim");
     }
 
-    // 3. Dalam implementasi nyata, di sini Anda akan memanggil smart contract
-    // untuk mentransfer token ke wallet pengguna
-    // Untuk demo, kita simulasikan dengan timeout dan update status
-
-    // Simulasi proses blockchain (dalam implementasi nyata, ini akan menjadi async)
-    setTimeout(async () => {
-      // Generate fake transaction hash
-      const txHash = '0x' + Array(64).fill(0).map(() => 
-        Math.floor(Math.random() * 16).toString(16)).join('');
-      
-      // Update status klaim menjadi completed
-      const { error: updateError } = await supabase
-        .from('token_claims')
-        .update({ 
-          status: 'completed',
-          tx_hash: txHash
-        })
-        .eq('id', data.id);
-      
-      if (updateError) {
-        console.error('Error updating claim status:', updateError);
-      }
-    }, 5000); // Simulasi delay 5 detik
+    // Generate claimId dalam format bytes32 untuk smart contract
+    // Dalam implementasi nyata, ini harus sesuai dengan format yang diharapkan oleh smart contract
+    const claimIdBytes32 = `0x${Buffer.from(data.id).toString('hex').padEnd(64, '0')}`;
 
     return {
-      success: true,
-      claimId: data.id
+      claimId: data.id,
+      walletAddress: data.wallet_address,
+      amount: data.amount,
+      blockchainClaimId: claimIdBytes32
     };
   } catch (error) {
-    console.error('Error claiming tokens:', error);
+    console.error("Error in claimTokensToWallet:", error);
     throw error;
   }
+}
+
+/**
+ * Update user's claimed tokens count
+ * @param userId User ID
+ * @param amount Amount of tokens claimed
+ */
+export async function updateUserClaimedTokens(userId: string, amount: number) {
+  const { data, error } = await supabase.rpc('update_user_claimed_tokens', {
+    user_id: userId,
+    amount: amount
+  });
+
+  if (error) {
+    console.error('Error updating claimed tokens:', error);
+    throw error;
+  }
+
+  return data;
 }

@@ -37,87 +37,96 @@ contract T2CManagerTest is Test {
         assertEq(manager.owner(), owner);
     }
 
-    function test_CreateClaim() public {
+    function test_MintTokens() public {
         string memory userId = "user123";
         uint256 amount = 100 * 10 ** 18; // 100 tokens
 
-        // Buat klaim sebagai user1
+        // Mint tokens sebagai user1
         vm.prank(user1);
-        bytes32 claimId = manager.createClaim(userId, user1, amount);
+        bytes32 mintId = manager.mintTokens(userId, user1, amount);
 
-        // Cek data klaim
-        (string memory storedUserId, address walletAddress, uint256 claimAmount, uint256 timestamp, bytes32 txHash) =
-            manager.getClaimDetails(claimId);
+        // Cek data mint record
+        (string memory storedUserId, address walletAddress, uint256 mintAmount, uint256 timestamp, bytes32 txHash) =
+            manager.getMintRecordDetails(mintId);
 
+        // Verifikasi data mint record
         assertEq(storedUserId, userId);
         assertEq(walletAddress, user1);
-        assertEq(claimAmount, amount);
-        assertEq(txHash, bytes32(0)); // Belum diproses
-    }
-
-    function test_ProcessClaim() public {
-        string memory userId = "user123";
-        uint256 amount = 100 * 10 ** 18; // 100 tokens
-
-        // Buat klaim sebagai user1
-        vm.prank(user1);
-        bytes32 claimId = manager.createClaim(userId, user1, amount);
-
-        // Proses klaim sebagai owner
-        bool success = manager.processClaim(claimId);
-
-        // Cek hasil
-        assertTrue(success);
+        assertEq(mintAmount, amount);
+        assertTrue(txHash != bytes32(0)); // Transaksi hash harus ada
 
         // Cek saldo token user1
         assertEq(token.balanceOf(user1), amount);
-
-        // Cek status klaim
-        (,,,, bytes32 txHash) = manager.getClaimDetails(claimId);
-        assertTrue(txHash != bytes32(0)); // Sudah diproses
     }
 
-    function test_ProcessClaimOnlyOnce() public {
+    function test_MintTokensMultipleTimes() public {
         string memory userId = "user123";
-        uint256 amount = 100 * 10 ** 18; // 100 tokens
+        uint256 amount1 = 100 * 10 ** 18; // 100 tokens
+        uint256 amount2 = 200 * 10 ** 18; // 200 tokens
 
-        // Buat klaim sebagai user1
+        // Mint tokens pertama kali
         vm.prank(user1);
-        bytes32 claimId = manager.createClaim(userId, user1, amount);
+        bytes32 mintId1 = manager.mintTokens(userId, user1, amount1);
 
-        // Proses klaim pertama kali
-        manager.processClaim(claimId);
+        // Mint tokens kedua kali
+        vm.prank(user1);
+        bytes32 mintId2 = manager.mintTokens(userId, user1, amount2);
 
-        // Coba proses lagi, harusnya revert
-        vm.expectRevert("Claim already processed");
-        manager.processClaim(claimId);
+        // Cek saldo total
+        assertEq(token.balanceOf(user1), amount1 + amount2);
+
+        // Pastikan mintId berbeda
+        assertTrue(mintId1 != mintId2);
     }
 
-    function test_GetUserClaims() public {
+    function test_GetUserMintRecords() public {
         string memory userId = "user123";
 
-        // Buat beberapa klaim untuk user yang sama
+        // Mint beberapa token untuk user yang sama
         vm.prank(user1);
-        bytes32 claim1 = manager.createClaim(userId, user1, 100 * 10 ** 18);
+        bytes32 mint1 = manager.mintTokens(userId, user1, 100 * 10 ** 18);
 
         vm.prank(user1);
-        bytes32 claim2 = manager.createClaim(userId, user1, 200 * 10 ** 18);
+        bytes32 mint2 = manager.mintTokens(userId, user1, 200 * 10 ** 18);
 
-        // Ambil daftar klaim user
-        bytes32[] memory claims = manager.getUserClaims(userId);
+        // Ambil daftar mint record user
+        bytes32[] memory mintRecords = manager.getUserMintRecords(userId);
 
         // Cek hasil
-        assertEq(claims.length, 2);
-        assertEq(claims[0], claim1);
-        assertEq(claims[1], claim2);
+        assertEq(mintRecords.length, 2);
+        assertEq(mintRecords[0], mint1);
+        assertEq(mintRecords[1], mint2);
+    }
+
+    function test_MintTokensForDifferentUsers() public {
+        string memory userId1 = "user123";
+        string memory userId2 = "user456";
+        uint256 amount1 = 100 * 10 ** 18;
+        uint256 amount2 = 200 * 10 ** 18;
+
+        // Mint untuk user1
+        vm.prank(user1);
+        manager.mintTokens(userId1, user1, amount1);
+
+        // Mint untuk user2
+        vm.prank(user2);
+        manager.mintTokens(userId2, user2, amount2);
+
+        // Cek saldo
+        assertEq(token.balanceOf(user1), amount1);
+        assertEq(token.balanceOf(user2), amount2);
+
+        // Cek user ID mapping
+        assertEq(manager.getUserIdByWallet(user1), userId1);
+        assertEq(manager.getUserIdByWallet(user2), userId2);
     }
 
     function test_GetUserIdByWallet() public {
         string memory userId = "user123";
 
-        // Buat klaim sebagai user1
+        // Mint tokens sebagai user1
         vm.prank(user1);
-        manager.createClaim(userId, user1, 100 * 10 ** 18);
+        manager.mintTokens(userId, user1, 100 * 10 ** 18);
 
         // Cek mapping wallet ke user ID
         string memory storedUserId = manager.getUserIdByWallet(user1);
